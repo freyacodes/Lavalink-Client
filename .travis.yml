@@ -27,6 +27,6 @@ jobs:
       if: env(TRAVIS_SECURE_ENV_VARS) = true
       before_script:
         #for full sonar cloud blame information
-        - "git fetch --unshallow"
+        - "git fetch --depth=10000"
       script:
         - "./gradlew sonarqube"

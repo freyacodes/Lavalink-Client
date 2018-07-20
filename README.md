@@ -5,16 +5,9 @@ You can add the following to your POM if you're using Maven:
 ```xml
 <dependencies>
     <dependency>
-        <groupId>com.github.Frederikam</groupId>
-        <artifactId>Lavalink</artifactId>
-        <version>version-goes-here</version>
-        <exclusions>
-            <exclusion>
-                <!-- Exclude the server module -->
-                <groupId>com.github.Frederikam.Lavalink</groupId>
-                <artifactId>Lavalink-Server</artifactId>
-            </exclusion>
-        </exclusions>
+        <groupId>com.github.FredBoat</groupId>
+        <artifactId>Lavalink-Client</artifactId>
+        <version>x.y.z</version>
     </dependency>
 </dependencies>
 ```
@@ -26,6 +19,18 @@ You can add the following to your POM if you're using Maven:
         <url>https://jitpack.io</url>
     </repository>
 </repositories>
+```
+
+Or Gradle:
+
+```groovy
+    repositories {
+        maven { url 'https://jitpack.io' }
+    }
+
+    dependencies {
+        compile group: 'com.github.FredBoat', name: 'Lavalink-Client', version: 'x.y.z'
+    }
 ```
 
 ### Jitpack versions

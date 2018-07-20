@@ -25,7 +25,7 @@ apply plugin: 'org.sonarqube'
 
 
 group = 'com.fredboat.lavalink.client'
-version = System.getenv('dev') == 'true' ? '-SNAPSHOT' : '3.0'
+version = "${versionFromTag()}"
 description = 'JDA based client for the Lavalink-Server'
 
 
@@ -159,5 +159,21 @@ publishing {
                 }
             }
         }
+    }
+}
+
+@SuppressWarnings("GrMethodMayBeStatic")
+String versionFromTag() {
+
+    def headTag = grgit.tag.list().find {
+        it.commit == grgit.head()
+    }
+
+    def clean = grgit.status().clean //uncommitted changes? -> should be SNAPSHOT
+
+    if (headTag && clean) {
+        headTag.getName()
+    } else {
+        "${grgit.head().id}-SNAPSHOT"
     }
 }

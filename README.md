@@ -1,4 +1,5 @@
-# Lavalink Client
+# Lavalink Client [![](https://jitpack.io/v/FredBoat/Lavalink-Client.svg)](https://jitpack.io/#FredBoat/Lavalink-Client)
+
 ## Installation
 Lavalink does not have a maven repository and instead uses Jitpack.
 You can add the following to your POM if you're using Maven:
@@ -34,13 +35,16 @@ Or Gradle:
 ```
 
 ### Jitpack versions
-Jitpack versioning is based on git branches and commit hashes. Eg:
+Jitpack versioning is based on git branches and commit hashes, or tags. Eg:
 
 ```
 ab123c4d
 master-SNAPSHOT
 dev-SNAPSHOT
+3.0
 ```
+
+Version tags of this client are expected to roughly follow lavalink server versioning.
 
 ## Migrating from v2 to v3
 The v3 client has been made to be generic, meaning that the base client can now be used without JDA.

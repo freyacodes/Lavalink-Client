@@ -1,4 +1,4 @@
-# Lavalink Client [![](https://jitpack.io/v/FredBoat/Lavalink-Client.svg)](https://jitpack.io/#FredBoat/Lavalink-Client)
+# Lavalink Client [![Release](https://img.shields.io/github/tag/FredBoat/Lavalink-Client.svg)](https://jitpack.io/#FredBoat/Lavalink-Client)
 
 ## Installation
 Lavalink does not have a maven repository and instead uses Jitpack.

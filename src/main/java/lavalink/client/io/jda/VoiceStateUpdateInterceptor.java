@@ -20,14 +20,14 @@ public class VoiceStateUpdateInterceptor extends VoiceStateUpdateHandler {
     @Override
     protected Long handleInternally(JSONObject content) {
         final Long guildId = content.has("guild_id") ? content.getLong("guild_id") : null;
-        if (guildId != null && api.getGuildLock().isLocked(guildId))
+        if (guildId != null && getJDA().getGuildLock().isLocked(guildId))
             return guildId;
         if (guildId == null)
             return super.handleInternally(content);
 
         final long userId = content.getLong("user_id");
         final Long channelId = !content.isNull("channel_id") ? content.getLong("channel_id") : null;
-        Guild guild = api.getGuildById(guildId);
+        Guild guild = getJDA().getGuildById(guildId);
         if (guild == null) return super.handleInternally(content);
 
         Member member = guild.getMemberById(userId);
@@ -49,7 +49,7 @@ public class VoiceStateUpdateInterceptor extends VoiceStateUpdateHandler {
         }
 
         if (link.getState() == Link.State.CONNECTED) {
-            api.getClient().updateAudioConnection(guildId, channel);
+            getJDA().getClient().updateAudioConnection(guildId, channel);
         }
 
         return super.handleInternally(content);

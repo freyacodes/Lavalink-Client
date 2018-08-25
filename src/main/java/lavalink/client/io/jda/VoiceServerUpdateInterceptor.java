@@ -45,11 +45,11 @@ public class VoiceServerUpdateInterceptor extends SocketHandler {
         log.debug(content.toString());
         long idLong = content.getLong("guild_id");
 
-        if (api.getGuildLock().isLocked(idLong))
+        if (getJDA().getGuildLock().isLocked(idLong))
             return idLong;
 
         // Get session
-        Guild guild = api.getGuildMap().get(idLong);
+        Guild guild = getJDA().getGuildMap().get(idLong);
         if (guild == null)
             throw new IllegalArgumentException("Attempted to start audio connection with Guild that doesn't exist! JSON: " + content);
 

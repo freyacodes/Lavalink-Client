@@ -45,7 +45,7 @@ public class VoiceServerUpdateInterceptor extends SocketHandler {
         log.debug(content.toString());
         long idLong = content.getLong("guild_id");
 
-        if (getJDA().getGuildLock().isLocked(idLong))
+        if (getJDA().getGuildSetupController().isLocked(idLong))
             return idLong;
 
         // Get session

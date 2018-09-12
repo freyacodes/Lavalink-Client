@@ -27,10 +27,7 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
 import lavalink.client.LavalinkUtil;
 import lavalink.client.player.LavalinkPlayer;
-import lavalink.client.player.event.PlayerEvent;
-import lavalink.client.player.event.TrackEndEvent;
-import lavalink.client.player.event.TrackExceptionEvent;
-import lavalink.client.player.event.TrackStuckEvent;
+import lavalink.client.player.event.*;
 import org.java_websocket.drafts.Draft;
 import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONObject;
@@ -112,8 +109,7 @@ public class LavalinkSocket extends ReusableWebSocket {
      * 1. TrackEndEvent
      * 2. TrackExceptionEvent
      * 3. TrackStuckEvent
-     * <p>
-     * The remaining are caused by the client
+     * 4. PlayerWebsocketClosed
      */
     private void handleEvent(JSONObject json) throws IOException {
         LavalinkPlayer player = lavalink.getLink(json.getString("guildId")).getPlayer();
@@ -136,6 +132,13 @@ public class LavalinkSocket extends ReusableWebSocket {
                 event = new TrackStuckEvent(player,
                         LavalinkUtil.toAudioTrack(json.getString("track")),
                         json.getLong("thresholdMs")
+                );
+                break;
+            case "PlayerWebsocketClosed":
+                event = new PlayerWebsocketClosed(player,
+                        json.getInt("code"),
+                        json.getString("reason"),
+                        json.getBoolean("byRemote")
                 );
                 break;
             default:

@@ -2,12 +2,12 @@ package lavalink.client.player.event;
 
 import lavalink.client.player.IPlayer;
 
-public class PlayerWebsocketClosed extends PlayerEvent {
+public class PlayerWebSocketClosed extends PlayerEvent {
     private final int code;
     private final String reason;
     private final boolean byRemote;
 
-    public PlayerWebsocketClosed(IPlayer player, int code, String reason, boolean byRemote) {
+    public PlayerWebSocketClosed(IPlayer player, int code, String reason, boolean byRemote) {
         super(player);
         this.code = code;
         this.reason = reason;

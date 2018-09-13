@@ -26,6 +26,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import lavalink.client.player.IPlayer;
 
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class PlayerEventListenerAdapter implements IPlayerEventListener {
 
     /**
@@ -77,6 +78,16 @@ public class PlayerEventListenerAdapter implements IPlayerEventListener {
         // Adapter dummy method
     }
 
+    /**
+     * @param player the player
+     * @param code WS close code
+     * @param reason reason for closing
+     * @param byRemote if closed by Discord (true) or Lavalink (false)
+     */
+    public void onWebSocketClose(IPlayer player, int code, String reason, boolean byRemote) {
+        // Adapter dummy method
+    }
+
 
     @Override
     public void onEvent(PlayerEvent event) {
@@ -92,6 +103,11 @@ public class PlayerEventListenerAdapter implements IPlayerEventListener {
             onTrackException(event.getPlayer(), ((TrackExceptionEvent) event).getTrack(), ((TrackExceptionEvent) event).getException());
         } else if (event instanceof TrackStuckEvent) {
             onTrackStuck(event.getPlayer(), ((TrackStuckEvent) event).getTrack(), ((TrackStuckEvent) event).getThresholdMs());
+        } else if (event instanceof PlayerWebSocketClosed) {
+            onWebSocketClose(event.getPlayer(),
+                    ((PlayerWebSocketClosed) event).getCode(),
+                    ((PlayerWebSocketClosed) event).getReason(),
+                    ((PlayerWebSocketClosed) event).byRemote());
         }
     }
 }

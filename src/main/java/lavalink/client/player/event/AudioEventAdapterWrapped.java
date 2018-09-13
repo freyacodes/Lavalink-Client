@@ -65,6 +65,22 @@ public abstract class AudioEventAdapterWrapped extends AudioEventAdapter impleme
                     ((TrackStuckEvent) event).getTrack(),
                     ((TrackStuckEvent) event).getThresholdMs()
             ));
+        } else if (event instanceof PlayerWebSocketClosed) {
+            onWebSocketClose(player,
+                    ((PlayerWebSocketClosed) event).getCode(),
+                    ((PlayerWebSocketClosed) event).getReason(),
+                    ((PlayerWebSocketClosed) event).byRemote());
         }
+    }
+
+    /**
+     * @param player the player
+     * @param code WS close code
+     * @param reason reason for closing
+     * @param byRemote if closed by Discord (true) or Lavalink (false)
+     */
+    @SuppressWarnings("WeakerAccess")
+    public void onWebSocketClose(AudioPlayer player, int code, String reason, boolean byRemote) {
+
     }
 }

@@ -112,6 +112,7 @@ public class LavalinkSocket extends ReusableWebSocket {
      * 4. PlayerWebSocketClosed
      */
     private void handleEvent(JSONObject json) throws IOException {
+        Link link = lavalink.getLink(json.getString("guildId"));
         LavalinkPlayer player = lavalink.getLink(json.getString("guildId")).getPlayer();
         PlayerEvent event = null;
 
@@ -135,7 +136,10 @@ public class LavalinkSocket extends ReusableWebSocket {
                 );
                 break;
             case "PlayerWebSocketClosed":
-                event = new PlayerWebSocketClosed(player,
+                // Unlike the other events, this is handled by the Link instead of the LavalinkPlayer,
+                // as this event is more relevant to the implementation of Link.
+
+                link.onVoiceWebSocketClosed(
                         json.getInt("code"),
                         json.getString("reason"),
                         json.getBoolean("byRemote")

@@ -227,8 +227,8 @@ abstract public class Link {
     }
 
     /**
-     * Invoked when the remote Lavalink server reports that this Link's WebSocket to the voice server was abnormally
-     * closed. This could be because of an expired voice session, that might have to be renewed.
+     * Invoked when the remote Lavalink server reports that this Link's WebSocket to the voice server was closed.
+     * This could be because of an expired voice session, that might have to be renewed.
      *
      * @param code the RFC 6455 close code.
      * @param reason the reason for closure, provided by the closing peer.

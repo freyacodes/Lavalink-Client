@@ -113,7 +113,12 @@ abstract public class Link {
         boolean shouldDisconnect = state != State.DISCONNECTING && state != State.NOT_CONNECTED;
         setState(State.DESTROYING);
         if (shouldDisconnect) {
-            queueAudioDisconnect();
+            try {
+                queueAudioDisconnect();
+            } catch (RuntimeException ignored) {
+                // This could fail in case we are not in a guild.
+                // In that case, we are already disconnected
+            }
         }
         setState(State.DESTROYED);
         lavalink.removeDestroyedLink(this);

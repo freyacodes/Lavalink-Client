@@ -45,6 +45,7 @@ public class LavalinkLoadBalancer {
         LavalinkSocket leastPenalty = null;
         int record = Integer.MAX_VALUE;
 
+        @SuppressWarnings("unchecked")
         List<LavalinkSocket> nodes = lavalink.getNodes();
         for (LavalinkSocket socket : nodes) {
             int total = getPenalties(socket, guild, penaltyProviders).getTotal();

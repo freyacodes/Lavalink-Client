@@ -37,6 +37,7 @@ abstract public class Link {
 
     private static final Logger log = LoggerFactory.getLogger(Link.class);
     private JSONObject lastVoiceServerUpdate = null;
+    private String lastSessionId = null;
     private final Lavalink lavalink;
     protected final long guild;
     private LavalinkPlayer player;
@@ -83,7 +84,7 @@ abstract public class Link {
     public void changeNode(LavalinkSocket newNode) {
         node = newNode;
         if (lastVoiceServerUpdate != null) {
-            node.send(lastVoiceServerUpdate.toString());
+            onVoiceServerUpdate(getLastVoiceServerUpdate(), lastSessionId);
             player.onNodeChange();
         }
     }
@@ -214,6 +215,7 @@ abstract public class Link {
 
     public void onVoiceServerUpdate(JSONObject json, String sessionId) {
         lastVoiceServerUpdate = json;
+        lastSessionId = sessionId;
 
         // Send WS message
         JSONObject out = new JSONObject();
@@ -260,7 +262,7 @@ abstract public class Link {
         /**
          * This {@link Link} has been destroyed and will soon (if not already) be unmapped from {@link Lavalink}
          */
-        DESTROYED;
+        DESTROYED
     }
 
 }

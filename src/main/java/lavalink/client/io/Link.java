@@ -233,6 +233,16 @@ abstract public class Link {
         return lastVoiceServerUpdate;
     }
 
+    /**
+     * Invoked when the remote Lavalink server reports that this Link's WebSocket to the voice server was closed.
+     * This could be because of an expired voice session, that might have to be renewed.
+     *
+     * @param code the RFC 6455 close code.
+     * @param reason the reason for closure, provided by the closing peer.
+     * @param byRemote true if closed by Discord, false if closed by the Lavalink server.
+     */
+    public void onVoiceWebSocketClosed(int code, String reason, boolean byRemote) {}
+
     public enum State {
         /**
          * Default, means we are not trying to use voice at all

@@ -60,35 +60,41 @@ public class LavalinkSocket extends ReusableWebSocket {
     @NonNull
     private final URI remoteUri;
     private boolean available = false;
-    private String resumeKey = "";
+    private final String resumeKey;
 
     LavalinkSocket(@NonNull String name, @NonNull Lavalink lavalink, @NonNull URI serverUri, Draft protocolDraft, Map<String, String> headers) {
         super(serverUri, protocolDraft, headers, TIMEOUT_MS);
         this.name = name;
+        this.resumeKey = name + "-" + Double.toHexString(Math.random());
         this.lavalink = lavalink;
         this.remoteUri = serverUri;
     }
 
     @Override
     public void onOpen(ServerHandshake handshakeData) {
-        log.info("Received handshake from server");
         available = true;
         lavalink.loadBalancer.onNodeConnect(this);
         reconnectsAttempted = 0;
         configureResuming();
+
+        if (Objects.equals(handshakeData.getFieldValue("Session-Resumed"), "true")) {
+            log.info("Resumed {} with resume key {}", remoteUri, resumeKey);
+            send(new JSONObject()
+                    .put("op", "reqState")
+                    .put("getAll", true)
+                    .toString());
+        } else {
+            log.info("Connected to {}", remoteUri);
+        }
     }
 
     void configureResuming() {
         JSONObject json = new JSONObject()
                 .put("op", "configureResuming")
                 .put("timeout", lavalink.getResumeTimeout());
-        if (lavalink.isResumeEnabled()) {
-            resumeKey = Long.toString(System.currentTimeMillis());
-            json.put("key", resumeKey);
-        } else {
-            resumeKey = null;
-            json.put("key", JSONObject.NULL);
-        }
+
+        if (lavalink.isResumeEnabled()) json.put("key", resumeKey);
+        else json.put("key", JSONObject.NULL);
 
         send(json.toString());
     }

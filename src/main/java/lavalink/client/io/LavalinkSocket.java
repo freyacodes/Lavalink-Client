@@ -75,15 +75,22 @@ public class LavalinkSocket extends ReusableWebSocket {
         available = true;
         lavalink.loadBalancer.onNodeConnect(this);
         reconnectsAttempted = 0;
+        configureResuming();
+    }
 
+    void configureResuming() {
+        JSONObject json = new JSONObject()
+                .put("op", "configureResuming")
+                .put("timeout", lavalink.getResumeTimeout());
         if (lavalink.isResumeEnabled()) {
             resumeKey = Long.toString(System.currentTimeMillis());
-            send(new JSONObject()
-                    .put("op", "configureResuming")
-                    .put("key", resumeKey)
-                    .put("timeout", lavalink.getResumeTimeout())
-                    .toString());
+            json.put("key", resumeKey);
+        } else {
+            resumeKey = null;
+            json.put("key", JSONObject.NULL);
         }
+
+        send(json.toString());
     }
 
     @Override

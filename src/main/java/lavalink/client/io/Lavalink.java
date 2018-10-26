@@ -154,19 +154,19 @@ public abstract class Lavalink<T extends Link> {
         return links;
     }
 
+    public void setResuming(boolean resumeEnabled, int resumeTimeout) {
+        this.resumeEnabled = resumeEnabled;
+        this.resumeTimeout = resumeTimeout;
+        nodes.forEach(it -> {
+            if (it.isOpen()) it.configureResuming();
+        });
+    }
+
     public boolean isResumeEnabled() {
         return resumeEnabled;
     }
 
-    public void setResumeEnabled(boolean resumeEnabled) {
-        this.resumeEnabled = resumeEnabled;
-    }
-
     public int getResumeTimeout() {
         return resumeTimeout;
-    }
-
-    public void setResumeTimeout(int resumeTimeout) {
-        this.resumeTimeout = resumeTimeout;
     }
 }

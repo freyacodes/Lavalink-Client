@@ -27,7 +27,10 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
 import lavalink.client.LavalinkUtil;
 import lavalink.client.player.LavalinkPlayer;
-import lavalink.client.player.event.*;
+import lavalink.client.player.event.PlayerEvent;
+import lavalink.client.player.event.TrackEndEvent;
+import lavalink.client.player.event.TrackExceptionEvent;
+import lavalink.client.player.event.TrackStuckEvent;
 import org.java_websocket.drafts.Draft;
 import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONObject;
@@ -57,6 +60,7 @@ public class LavalinkSocket extends ReusableWebSocket {
     @NonNull
     private final URI remoteUri;
     private boolean available = false;
+    private String resumeKey = "";
 
     LavalinkSocket(@NonNull String name, @NonNull Lavalink lavalink, @NonNull URI serverUri, Draft protocolDraft, Map<String, String> headers) {
         super(serverUri, protocolDraft, headers, TIMEOUT_MS);
@@ -71,6 +75,15 @@ public class LavalinkSocket extends ReusableWebSocket {
         available = true;
         lavalink.loadBalancer.onNodeConnect(this);
         reconnectsAttempted = 0;
+
+        if (lavalink.isResumeEnabled()) {
+            resumeKey = Long.toString(System.currentTimeMillis());
+            send(new JSONObject()
+                    .put("op", "configureResuming")
+                    .put("key", resumeKey)
+                    .put("timeout", lavalink.getResumeTimeout())
+                    .toString());
+        }
     }
 
     @Override
@@ -187,7 +200,7 @@ public class LavalinkSocket extends ReusableWebSocket {
     }
 
     @NonNull
-    @SuppressWarnings("unused")
+    @SuppressWarnings("WeakerAccess")
     public URI getRemoteUri() {
         return remoteUri;
     }

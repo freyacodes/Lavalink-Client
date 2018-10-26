@@ -46,6 +46,8 @@ public abstract class Lavalink<T extends Link> {
     private final ConcurrentHashMap<String, T> links = new ConcurrentHashMap<>();
     final List<LavalinkSocket> nodes = new CopyOnWriteArrayList<>();
     final LavalinkLoadBalancer loadBalancer = new LavalinkLoadBalancer(this);
+    private boolean resumeEnabled = false;
+    private int resumeTimeout = 60;
 
     private final ScheduledExecutorService reconnectService;
 
@@ -152,4 +154,19 @@ public abstract class Lavalink<T extends Link> {
         return links;
     }
 
+    public boolean isResumeEnabled() {
+        return resumeEnabled;
+    }
+
+    public void setResumeEnabled(boolean resumeEnabled) {
+        this.resumeEnabled = resumeEnabled;
+    }
+
+    public int getResumeTimeout() {
+        return resumeTimeout;
+    }
+
+    public void setResumeTimeout(int resumeTimeout) {
+        this.resumeTimeout = resumeTimeout;
+    }
 }

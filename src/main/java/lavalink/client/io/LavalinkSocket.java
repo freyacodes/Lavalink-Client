@@ -62,12 +62,14 @@ public class LavalinkSocket extends ReusableWebSocket {
     private boolean available = false;
     private final String resumeKey;
 
-    LavalinkSocket(@NonNull String name, @NonNull Lavalink lavalink, @NonNull URI serverUri, Draft protocolDraft, Map<String, String> headers) {
+    LavalinkSocket(@NonNull String name, @NonNull Lavalink lavalink, @NonNull URI serverUri,
+                   @NonNull Draft protocolDraft, @NonNull Map<String, String> headers) {
         super(serverUri, protocolDraft, headers, TIMEOUT_MS);
         this.name = name;
         this.resumeKey = name + "-" + Double.toHexString(Math.random());
         this.lavalink = lavalink;
         this.remoteUri = serverUri;
+        headers.put("Resume-Key", resumeKey);
     }
 
     @Override

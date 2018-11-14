@@ -61,10 +61,15 @@ public class LavalinkUtil {
         return PLAYER_MANAGER.decodeTrack(new MessageInput(bais)).decodedTrack;
     }
 
-    public static String toMessage(AudioTrack track) throws IOException {
+    @SuppressWarnings("WeakerAccess")
+    public static byte[] toBinary(AudioTrack track) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PLAYER_MANAGER.encodeTrack(new MessageOutput(baos), track);
-        return Base64.encodeBytes(baos.toByteArray());
+        return baos.toByteArray();
+    }
+
+    public static String toMessage(AudioTrack track) throws IOException {
+        return Base64.encodeBytes(toBinary(track));
     }
 
     public static int getShardFromSnowflake(String snowflake, int numShards) {

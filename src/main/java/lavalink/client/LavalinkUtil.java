@@ -55,21 +55,48 @@ public class LavalinkUtil {
         PLAYER_MANAGER.registerSourceManager(new HttpAudioSourceManager());
     }
 
+    /**
+     *
+     * @param message the Base64 audio track
+     * @return the AudioTrack
+     * @throws IOException if there is an IO problem
+     */
     public static AudioTrack toAudioTrack(String message) throws IOException {
+        return toAudioTrack(Base64.decode(message));
+    }
+
+    /**
+     *
+     * @param message the unencoded audio track
+     * @return the AudioTrack
+     * @throws IOException if there is an IO problem
+     */
+    @SuppressWarnings("WeakerAccess")
+    public static AudioTrack toAudioTrack(byte[] message) throws IOException {
         byte[] b64 = Base64.decode(message);
         ByteArrayInputStream bais = new ByteArrayInputStream(b64);
         return PLAYER_MANAGER.decodeTrack(new MessageInput(bais)).decodedTrack;
     }
 
+    /**
+     * @param track the track to serialize
+     * @return the serialized track a Base64 string
+     * @throws IOException if there is an IO problem
+     */
+    public static String toMessage(AudioTrack track) throws IOException {
+        return Base64.encodeBytes(toBinary(track));
+    }
+
+    /**
+     * @param track the track to serialize
+     * @return the serialized track as binary
+     * @throws IOException if there is an IO problem
+     */
     @SuppressWarnings("WeakerAccess")
     public static byte[] toBinary(AudioTrack track) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PLAYER_MANAGER.encodeTrack(new MessageOutput(baos), track);
         return baos.toByteArray();
-    }
-
-    public static String toMessage(AudioTrack track) throws IOException {
-        return Base64.encodeBytes(toBinary(track));
     }
 
     public static int getShardFromSnowflake(String snowflake, int numShards) {

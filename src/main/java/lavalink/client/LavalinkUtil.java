@@ -66,15 +66,13 @@ public class LavalinkUtil {
     }
 
     /**
-     *
      * @param message the unencoded audio track
      * @return the AudioTrack
      * @throws IOException if there is an IO problem
      */
     @SuppressWarnings("WeakerAccess")
     public static AudioTrack toAudioTrack(byte[] message) throws IOException {
-        byte[] b64 = Base64.decode(message);
-        ByteArrayInputStream bais = new ByteArrayInputStream(b64);
+        ByteArrayInputStream bais = new ByteArrayInputStream(message);
         return PLAYER_MANAGER.decodeTrack(new MessageInput(bais)).decodedTrack;
     }
 

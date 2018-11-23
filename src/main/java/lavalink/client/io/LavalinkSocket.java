@@ -60,16 +60,18 @@ public class LavalinkSocket extends ReusableWebSocket {
     @NonNull
     private final URI remoteUri;
     private boolean available = false;
-    private String resumeKey = null;
+    @Nullable
+    private String resumeKey;
     private int resumeTimeout = 60;
 
     LavalinkSocket(@NonNull String name, @NonNull Lavalink lavalink, @NonNull URI serverUri,
-                   @NonNull Draft protocolDraft, @NonNull Map<String, String> headers) {
+                   @NonNull Draft protocolDraft, @NonNull Map<String, String> headers, @Nullable String resumeKey) {
         super(serverUri, protocolDraft, headers, TIMEOUT_MS);
         this.name = name;
         this.lavalink = lavalink;
         this.remoteUri = serverUri;
-        headers.put("Resume-Key", resumeKey);
+        this.resumeKey = resumeKey;
+        if (resumeKey != null) headers.put("Resume-Key", resumeKey);
     }
 
     @Override
@@ -90,6 +92,7 @@ public class LavalinkSocket extends ReusableWebSocket {
      * @param resumeKey the key to later use for resuming, or null to disable resuming
      * @param resumeTimeout The timeout before Lavalink should shutdown pauses sessions. In seconds.
      */
+    @SuppressWarnings("unused")
     public void setResuming(String resumeKey, int resumeTimeout) {
         this.resumeKey = resumeKey;
         this.resumeTimeout = resumeTimeout;

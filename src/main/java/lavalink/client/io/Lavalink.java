@@ -36,11 +36,11 @@ import java.util.Map;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+@SuppressWarnings("unused")
 public abstract class Lavalink<T extends Link> {
 
     private static final Logger log = LoggerFactory.getLogger(Lavalink.class);
 
-    @SuppressWarnings("WeakerAccess")
     protected final int numShards;
     private final String userId;
     private final ConcurrentHashMap<String, T> links = new ConcurrentHashMap<>();
@@ -63,26 +63,46 @@ public abstract class Lavalink<T extends Link> {
 
     private static final AtomicInteger nodeCounter = new AtomicInteger(0);
 
+    /**
+     * @param serverUri uri of the node to be added
+     * @param password password of the node to be added
+     */
     public void addNode(@NonNull URI serverUri, @NonNull String password) {
-        addNode("Lavalink_Node_#" + nodeCounter.getAndIncrement(), serverUri, password);
+        addNode("Lavalink_Node_#" + nodeCounter.getAndIncrement(), serverUri, password, null);
     }
 
     /**
-     * @param name
-     *         A name to identify this node. May show up in metrics and other places.
-     * @param serverUri
-     *         uri of the node to be added
-     * @param password
-     *         password of the node to be added
+     * @param serverUri uri of the node to be added
+     * @param password password of the node to be added
+     * @param resumeKey key to use when resuming
+     */
+    public void addNode(@NonNull URI serverUri, @NonNull String password, @Nullable String resumeKey) {
+        addNode("Lavalink_Node_#" + nodeCounter.getAndIncrement(), serverUri, password, resumeKey);
+    }
+
+    /**
+     * @param name A name to identify this node. May show up in metrics and other places.
+     * @param serverUri uri of the node to be added
+     * @param password password of the node to be added
+     */
+    public void addNode(@NonNull String name, @NonNull URI serverUri, @NonNull String password) {
+        addNode(name, serverUri, password, null);
+    }
+
+    /**
+     * @param name A name to identify this node. May show up in metrics and other places.
+     * @param serverUri uri of the node to be added
+     * @param password password of the node to be added
+     * @param resumeKey key to use when resuming
      */
     @SuppressWarnings("WeakerAccess")
-    public void addNode(@NonNull String name, @NonNull URI serverUri, @NonNull String password) {
+    public void addNode(@NonNull String name, @NonNull URI serverUri, @NonNull String password, @Nullable String resumeKey) {
         HashMap<String, String> headers = new HashMap<>();
         headers.put("Authorization", password);
         headers.put("Num-Shards", Integer.toString(numShards));
         headers.put("User-Id", userId);
 
-        LavalinkSocket socket = new LavalinkSocket(name, this, serverUri, new Draft_6455(), headers);
+        LavalinkSocket socket = new LavalinkSocket(name, this, serverUri, new Draft_6455(), headers, resumeKey);
         socket.connect();
         nodes.add(socket);
     }

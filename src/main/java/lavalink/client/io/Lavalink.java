@@ -67,6 +67,7 @@ public abstract class Lavalink<T extends Link> {
      * @param serverUri uri of the node to be added
      * @param password password of the node to be added
      */
+    @SuppressWarnings("UnusedReturnValue")
     public LavalinkSocket addNode(@NonNull URI serverUri, @NonNull String password) {
         return addNode("Lavalink_Node_#" + nodeCounter.getAndIncrement(), serverUri, password, null);
     }
@@ -122,7 +123,6 @@ public abstract class Lavalink<T extends Link> {
         return loadBalancer;
     }
 
-    @SuppressWarnings("WeakerAccess")
     @NonNull
     public T getLink(@NonNull String guildId) {
         return links.computeIfAbsent(guildId, __ -> buildNewLink(guildId));
@@ -143,7 +143,6 @@ public abstract class Lavalink<T extends Link> {
      */
     protected abstract T buildNewLink(String guildId);
 
-    @SuppressWarnings("WeakerAccess")
     public int getNumShards() {
         return numShards;
     }
@@ -154,7 +153,6 @@ public abstract class Lavalink<T extends Link> {
         return links.values();
     }
 
-    @SuppressWarnings("WeakerAccess")
     @NonNull
     public List<LavalinkSocket> getNodes() {
         return nodes;
@@ -170,11 +168,10 @@ public abstract class Lavalink<T extends Link> {
         links.remove(link.getGuildId());
     }
 
-    @SuppressWarnings("WeakerAccess")
     protected Map<String, T> getLinksMap() {
         return links;
     }
 
     @SuppressWarnings("WeakerAccess")
-    protected void onNodeConnect(LavalinkSocket node, boolean resumed) {}
+    protected void onNodeConnect(LavalinkSocket.NodeConnectedEvent event) {}
 }

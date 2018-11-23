@@ -88,7 +88,7 @@ public class LavalinkSocket extends ReusableWebSocket {
             log.info("Connected to {}", remoteUri);
         }
 
-        lavalink.onNodeConnect(this, resumed);
+        lavalink.onNodeConnect(new NodeConnectedEvent(this, resumed));
     }
 
     /**
@@ -262,4 +262,15 @@ public class LavalinkSocket extends ReusableWebSocket {
                 ",remoteUri=" + remoteUri +
                 '}';
     }
+
+    public static class NodeConnectedEvent {
+        public final LavalinkSocket node;
+        public final boolean resumed;
+
+        public NodeConnectedEvent(LavalinkSocket node, boolean resumed) {
+            this.node = node;
+            this.resumed = resumed;
+        }
+    }
+
 }

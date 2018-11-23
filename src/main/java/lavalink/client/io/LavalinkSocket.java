@@ -81,11 +81,14 @@ public class LavalinkSocket extends ReusableWebSocket {
         reconnectsAttempted = 0;
         configureResuming();
 
-        if (Objects.equals(handshakeData.getFieldValue("Session-Resumed"), "true")) {
+        boolean resumed = Objects.equals(handshakeData.getFieldValue("Session-Resumed"), "true");
+        if (resumed) {
             log.info("Resumed {} with resume key {}", remoteUri, resumeKey);
         } else {
             log.info("Connected to {}", remoteUri);
         }
+
+        lavalink.onNodeConnect(this, resumed);
     }
 
     /**

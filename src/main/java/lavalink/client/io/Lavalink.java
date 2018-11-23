@@ -174,4 +174,7 @@ public abstract class Lavalink<T extends Link> {
     protected Map<String, T> getLinksMap() {
         return links;
     }
+
+    @SuppressWarnings("WeakerAccess")
+    protected void onNodeConnect(LavalinkSocket node, boolean resumed) {}
 }

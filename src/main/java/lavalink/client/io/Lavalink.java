@@ -67,8 +67,8 @@ public abstract class Lavalink<T extends Link> {
      * @param serverUri uri of the node to be added
      * @param password password of the node to be added
      */
-    public void addNode(@NonNull URI serverUri, @NonNull String password) {
-        addNode("Lavalink_Node_#" + nodeCounter.getAndIncrement(), serverUri, password, null);
+    public LavalinkSocket addNode(@NonNull URI serverUri, @NonNull String password) {
+        return addNode("Lavalink_Node_#" + nodeCounter.getAndIncrement(), serverUri, password, null);
     }
 
     /**
@@ -76,8 +76,8 @@ public abstract class Lavalink<T extends Link> {
      * @param password password of the node to be added
      * @param resumeKey key to use when resuming
      */
-    public void addNode(@NonNull URI serverUri, @NonNull String password, @Nullable String resumeKey) {
-        addNode("Lavalink_Node_#" + nodeCounter.getAndIncrement(), serverUri, password, resumeKey);
+    public LavalinkSocket addNode(@NonNull URI serverUri, @NonNull String password, @Nullable String resumeKey) {
+        return addNode("Lavalink_Node_#" + nodeCounter.getAndIncrement(), serverUri, password, resumeKey);
     }
 
     /**
@@ -85,8 +85,8 @@ public abstract class Lavalink<T extends Link> {
      * @param serverUri uri of the node to be added
      * @param password password of the node to be added
      */
-    public void addNode(@NonNull String name, @NonNull URI serverUri, @NonNull String password) {
-        addNode(name, serverUri, password, null);
+    public LavalinkSocket addNode(@NonNull String name, @NonNull URI serverUri, @NonNull String password) {
+        return addNode(name, serverUri, password, null);
     }
 
     /**
@@ -96,7 +96,8 @@ public abstract class Lavalink<T extends Link> {
      * @param resumeKey key to use when resuming
      */
     @SuppressWarnings("WeakerAccess")
-    public void addNode(@NonNull String name, @NonNull URI serverUri, @NonNull String password, @Nullable String resumeKey) {
+    public LavalinkSocket addNode(@NonNull String name, @NonNull URI serverUri,
+                                  @NonNull String password, @Nullable String resumeKey) {
         HashMap<String, String> headers = new HashMap<>();
         headers.put("Authorization", password);
         headers.put("Num-Shards", Integer.toString(numShards));
@@ -105,6 +106,8 @@ public abstract class Lavalink<T extends Link> {
         LavalinkSocket socket = new LavalinkSocket(name, this, serverUri, new Draft_6455(), headers, resumeKey);
         socket.connect();
         nodes.add(socket);
+
+        return socket;
     }
 
     @SuppressWarnings("unused")

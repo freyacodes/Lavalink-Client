@@ -44,7 +44,7 @@ public abstract class Lavalink<T extends Link> {
     protected final int numShards;
     private final String userId;
     private final ConcurrentHashMap<String, T> links = new ConcurrentHashMap<>();
-    final List<LavalinkSocket> nodes = new CopyOnWriteArrayList<>();
+    private final List<LavalinkSocket> nodes = new CopyOnWriteArrayList<>();
     final LavalinkLoadBalancer loadBalancer = new LavalinkLoadBalancer(this);
     private boolean resumeEnabled = false;
     private int resumeTimeout = 60;

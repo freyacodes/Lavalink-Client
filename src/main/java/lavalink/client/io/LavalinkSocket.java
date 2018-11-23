@@ -81,10 +81,6 @@ public class LavalinkSocket extends ReusableWebSocket {
 
         if (Objects.equals(handshakeData.getFieldValue("Session-Resumed"), "true")) {
             log.info("Resumed {} with resume key {}", remoteUri, resumeKey);
-            send(new JSONObject()
-                    .put("op", "reqState")
-                    .put("getAll", true)
-                    .toString());
         } else {
             log.info("Connected to {}", remoteUri);
         }

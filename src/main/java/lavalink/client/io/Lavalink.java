@@ -24,6 +24,7 @@ package lavalink.client.io;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
+import lavalink.client.player.LavalinkPlayer;
 import org.java_websocket.drafts.Draft_6455;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,10 +44,10 @@ public abstract class Lavalink<T extends Link> {
 
     protected final int numShards;
     private final String userId;
+    private boolean holdEvents = false;
     private final ConcurrentHashMap<String, T> links = new ConcurrentHashMap<>();
     private final List<LavalinkSocket> nodes = new CopyOnWriteArrayList<>();
     final LavalinkLoadBalancer loadBalancer = new LavalinkLoadBalancer(this);
-
     private final ScheduledExecutorService reconnectService;
 
     public Lavalink(String userId, int numShards) {
@@ -65,7 +66,7 @@ public abstract class Lavalink<T extends Link> {
 
     /**
      * @param serverUri uri of the node to be added
-     * @param password password of the node to be added
+     * @param password  password of the node to be added
      */
     @SuppressWarnings("UnusedReturnValue")
     public LavalinkSocket addNode(@NonNull URI serverUri, @NonNull String password) {
@@ -74,7 +75,7 @@ public abstract class Lavalink<T extends Link> {
 
     /**
      * @param serverUri uri of the node to be added
-     * @param password password of the node to be added
+     * @param password  password of the node to be added
      * @param resumeKey key to use when resuming
      */
     public LavalinkSocket addNode(@NonNull URI serverUri, @NonNull String password, @Nullable String resumeKey) {
@@ -82,18 +83,18 @@ public abstract class Lavalink<T extends Link> {
     }
 
     /**
-     * @param name A name to identify this node. May show up in metrics and other places.
+     * @param name      A name to identify this node. May show up in metrics and other places.
      * @param serverUri uri of the node to be added
-     * @param password password of the node to be added
+     * @param password  password of the node to be added
      */
     public LavalinkSocket addNode(@NonNull String name, @NonNull URI serverUri, @NonNull String password) {
         return addNode(name, serverUri, password, null);
     }
 
     /**
-     * @param name A name to identify this node. May show up in metrics and other places.
+     * @param name      A name to identify this node. May show up in metrics and other places.
      * @param serverUri uri of the node to be added
-     * @param password password of the node to be added
+     * @param password  password of the node to be added
      * @param resumeKey key to use when resuming
      */
     @SuppressWarnings("WeakerAccess")
@@ -173,5 +174,29 @@ public abstract class Lavalink<T extends Link> {
     }
 
     @SuppressWarnings("WeakerAccess")
-    protected void onNodeConnect(LavalinkSocket.NodeConnectedEvent event) {}
+    protected void onNodeConnect(LavalinkSocket.NodeConnectedEvent event) {
+    }
+
+    /**
+     * @return whether or not new Links will hold onto LavalinkPlayer events, before manually released.
+     * @see this#setHoldEvents(boolean)
+     */
+    public boolean willHoldEvents() {
+        return holdEvents;
+    }
+
+    /**
+     * if set to true, {@link LavalinkPlayer} events held back instead of being emitted immediately.
+     * This method does not work retroactively, and only affects new Links.
+     * Events can be released by invoking {@link Link#releaseHeldEvents()}, in which case no new events will be held
+     * back for that Link.
+     * This is useful if you are not immediately ready to take events for a player, for instance
+     * if you are asynchronously trying to populate the player state.
+     *
+     * @param holdEvents if events should be held
+     * @see Link#releaseHeldEvents()
+     */
+    public void setHoldEvents(boolean holdEvents) {
+        this.holdEvents = holdEvents;
+    }
 }

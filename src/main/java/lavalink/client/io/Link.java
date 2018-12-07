@@ -45,10 +45,12 @@ abstract public class Link {
     private volatile LavalinkSocket node = null;
     /* May only be set by setState() */
     private volatile State state = State.NOT_CONNECTED;
+    private volatile boolean holdEvents;
 
     protected Link(Lavalink lavalink, String guildId) {
         this.lavalink = lavalink;
         this.guild = Long.parseLong(guildId);
+        this.holdEvents = lavalink.willHoldEvents();
     }
 
     public LavalinkPlayer getPlayer() {
@@ -242,6 +244,19 @@ abstract public class Link {
      * @param byRemote true if closed by Discord, false if closed by the Lavalink server.
      */
     public void onVoiceWebSocketClosed(int code, String reason, boolean byRemote) {}
+
+    /**
+     * Emit events that were held back.
+     * @see Lavalink#setHoldEvents(boolean)
+     */
+    public void releaseHeldEvents() {
+        holdEvents = false;
+        if(player != null) player.releaseEvent();
+    }
+
+    public boolean willHoldEvents() {
+        return holdEvents;
+    }
 
     public enum State {
         /**

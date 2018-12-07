@@ -32,12 +32,17 @@ import lavalink.client.player.event.PlayerPauseEvent;
 import lavalink.client.player.event.PlayerResumeEvent;
 import lavalink.client.player.event.TrackStartEvent;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class LavalinkPlayer implements IPlayer {
+
+    private static final Logger log = LoggerFactory.getLogger(LavalinkPlayer.class);
 
     private AudioTrack track = null;
     private boolean paused = false;
@@ -47,6 +52,7 @@ public class LavalinkPlayer implements IPlayer {
 
     private final Link link;
     private List<IPlayerEventListener> listeners = new CopyOnWriteArrayList<>();
+    private volatile ConcurrentLinkedQueue<PlayerEvent> heldEvents = null;
 
     /**
      * Constructor only for internal use
@@ -56,6 +62,7 @@ public class LavalinkPlayer implements IPlayer {
     public LavalinkPlayer(Link link) {
         this.link = link;
         addListener(new LavalinkInternalPlayerEventHandler());
+        if (link.willHoldEvents()) heldEvents = new ConcurrentLinkedQueue<>();
     }
 
     /**
@@ -205,7 +212,32 @@ public class LavalinkPlayer implements IPlayer {
     }
 
     public void emitEvent(PlayerEvent event) {
-        listeners.forEach(listener -> listener.onEvent(event));
+        if (heldEvents == null) {
+            emitEvent0(event);
+        } else {
+            heldEvents.add(event);
+        }
+
+    }
+
+    private void emitEvent0(PlayerEvent event) {
+        for (IPlayerEventListener listener : listeners) {
+            try {
+                listener.onEvent(event);
+            } catch (Exception e) {
+                log.error("Exception while emitting event", e);
+            }
+        }
+    }
+
+    /**
+     * For internal use.
+     * @see Link#releaseHeldEvents()
+     */
+    public void releaseEvent() {
+        ConcurrentLinkedQueue<PlayerEvent> queue = heldEvents;
+        heldEvents = null;
+        queue.forEach(this::emitEvent0);
     }
 
     void clearTrack() {

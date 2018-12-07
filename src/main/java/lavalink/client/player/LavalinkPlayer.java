@@ -112,6 +112,15 @@ public class LavalinkPlayer implements IPlayer {
         }
     }
 
+    /**
+     * Internally sets the track without side effects.
+     * This is an escape hatch in case you need to set the track, but don't want to affect the server.
+     */
+    @SuppressWarnings("unused")
+    public void explicitlySetTrack(AudioTrack track) {
+        this.track = track;
+    }
+
     @Override
     public void stopTrack() {
         track = null;
@@ -247,7 +256,7 @@ public class LavalinkPlayer implements IPlayer {
         track = null;
     }
 
-    @SuppressWarnings("WeakerAccess")
+    @SuppressWarnings("unused")
     public Link getLink() {
         return link;
     }

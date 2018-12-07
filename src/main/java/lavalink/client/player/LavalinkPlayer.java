@@ -216,6 +216,9 @@ public class LavalinkPlayer implements IPlayer {
             emitEvent0(event);
         } else {
             heldEvents.add(event);
+            if (heldEvents.size() % 10 == 0) {
+                log.warn("{} has held back {} events! Did you forget to release them?", this, heldEvents.size());
+            }
         }
 
     }

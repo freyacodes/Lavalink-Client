@@ -88,7 +88,12 @@ public class JdaLink extends Link {
     @Override
     protected void queueAudioDisconnect() {
         Guild g = getJda().getGuildById(guild);
-        getMainWs().queueAudioDisconnect(g);
+
+        if (g != null) {
+            getMainWs().queueAudioDisconnect(g);
+        } else {
+            log.warn("Attempted to disconnect, but guild {} was not found", guild);
+        }
     }
 
     @Override

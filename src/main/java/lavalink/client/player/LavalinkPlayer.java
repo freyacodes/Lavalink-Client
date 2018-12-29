@@ -86,6 +86,11 @@ public class LavalinkPlayer implements IPlayer {
 
     @Override
     public void playTrack(AudioTrack track) {
+        playTrack(track, false);
+    }
+
+    @SuppressWarnings("WeakerAccess")
+    public void playTrack(AudioTrack track, boolean noReplaceSame) {
         try {
             position = track.getPosition();
             TrackData trackData = track.getUserData(TrackData.class);
@@ -95,13 +100,13 @@ public class LavalinkPlayer implements IPlayer {
             json.put("guildId", link.getGuildId());
             json.put("track", LavalinkUtil.toMessage(track));
             json.put("startTime", position);
+            json.put("noReplaceSame", noReplaceSame);
             if (trackData != null) {
                 json.put("startTime", trackData.startPos);
                 json.put("endTime", trackData.endPos);
             }
             json.put("pause", paused);
             json.put("volume", volume);
-            //noinspection ConstantConditions
             link.getNode(true).send(json.toString());
 
             updateTime = System.currentTimeMillis();
@@ -110,15 +115,6 @@ public class LavalinkPlayer implements IPlayer {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    /**
-     * Internally sets the track without side effects.
-     * This is an escape hatch in case you need to set the track, but don't want to affect the server.
-     */
-    @SuppressWarnings("unused")
-    public void explicitlySetTrack(AudioTrack track) {
-        this.track = track;
     }
 
     @Override
@@ -181,7 +177,6 @@ public class LavalinkPlayer implements IPlayer {
         json.put("op", "seek");
         json.put("guildId", link.getGuildId());
         json.put("position", position);
-        //noinspection ConstantConditions
         link.getNode(true).send(json.toString());
     }
 

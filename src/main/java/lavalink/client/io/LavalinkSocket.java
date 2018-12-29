@@ -152,10 +152,17 @@ public class LavalinkSocket extends ReusableWebSocket {
      */
     private void handleEvent(JSONObject json) throws IOException {
         Link link = lavalink.getLink(json.getString("guildId"));
+        String type = json.getString("type");
+        if (link.getNode() != null && !link.getNode().equals(this)) {
+            log.warn("Received {} for {} which is not associated with this node: {}", type, link, this);
+        } else {
+            log.info("Changing {}'s node to {} because we received {}", link, this, type);
+            link.changeNode(this);
+        }
         LavalinkPlayer player = lavalink.getLink(json.getString("guildId")).getPlayer();
         PlayerEvent event = null;
 
-        switch (json.getString("type")) {
+        switch (type) {
             case "TrackEndEvent":
                 event = new TrackEndEvent(player,
                         LavalinkUtil.toAudioTrack(json.getString("track")),

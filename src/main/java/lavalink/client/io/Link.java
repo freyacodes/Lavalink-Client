@@ -29,6 +29,8 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Objects;
+
 
 /**
  * Indicates which node we are linked to, what voice channel to use, and what player we are using
@@ -84,6 +86,10 @@ abstract public class Link {
     }
 
     public void changeNode(LavalinkSocket newNode) {
+        if (Objects.equals(node, newNode)) {
+            log.warn("Attempt to replace node of {} with the same node already configured. Ignoring...");
+            return;
+        }
         node = newNode;
         if (lastVoiceServerUpdate != null) {
             onVoiceServerUpdate(getLastVoiceServerUpdate(), lastSessionId);

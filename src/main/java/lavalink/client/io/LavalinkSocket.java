@@ -155,7 +155,7 @@ public class LavalinkSocket extends ReusableWebSocket {
         String type = json.getString("type");
         if (link.getNode() != null && !link.getNode().equals(this)) {
             log.warn("Received {} for {} which is not associated with this node: {}", type, link, this);
-        } else {
+        } else if (link.getNode() == null) {
             log.info("Changing {}'s node to {} because we received {}", link, this, type);
             link.changeNode(this);
         }

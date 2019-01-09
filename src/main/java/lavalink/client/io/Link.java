@@ -91,6 +91,10 @@ abstract public class Link {
             return;
         }
         node = newNode;
+        onNodeConnected();
+    }
+
+    void onNodeConnected() {
         if (lastVoiceServerUpdate != null) {
             onVoiceServerUpdate(getLastVoiceServerUpdate(), lastSessionId);
             player.onNodeChange();

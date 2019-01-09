@@ -76,7 +76,7 @@ public class LavalinkLoadBalancer {
         Collection<Link> links = lavalink.getLinks();
         links.forEach(link -> {
             if (disconnected.equals(link.getNode(false)))
-                link.changeNode(lavalink.loadBalancer.determineBestSocket(link.getGuildIdLong()));
+                link.changeNode(determineBestSocket(link.getGuildIdLong()));
         });
     }
 
@@ -93,8 +93,9 @@ public class LavalinkLoadBalancer {
         @SuppressWarnings("unchecked")
         Collection<Link> links = lavalink.getLinks();
         links.forEach(link -> {
-            if (link.getNode(false) == null)
-                link.changeNode(connected);
+            LavalinkSocket current = link.getNode(false);
+            if (current == null) link.changeNode(connected);
+            else if (current == connected) link.onNodeConnected();
         });
     }
 

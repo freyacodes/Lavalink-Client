@@ -90,7 +90,7 @@ public class LavalinkPlayer implements IPlayer {
     }
 
     @SuppressWarnings("WeakerAccess")
-    public void playTrack(AudioTrack track, boolean noReplaceSame) {
+    public void playTrack(AudioTrack track, boolean noReplace) {
         try {
             position = track.getPosition();
             TrackData trackData = track.getUserData(TrackData.class);
@@ -100,7 +100,7 @@ public class LavalinkPlayer implements IPlayer {
             json.put("guildId", link.getGuildId());
             json.put("track", LavalinkUtil.toMessage(track));
             json.put("startTime", position);
-            json.put("noReplaceSame", noReplaceSame);
+            json.put("noReplace", noReplace);
             if (trackData != null) {
                 json.put("startTime", trackData.startPos);
                 json.put("endTime", trackData.endPos);

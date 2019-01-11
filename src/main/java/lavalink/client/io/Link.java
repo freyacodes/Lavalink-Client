@@ -25,6 +25,7 @@ package lavalink.client.io;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
 import lavalink.client.player.LavalinkPlayer;
+import org.jetbrains.annotations.Contract;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -162,7 +163,7 @@ abstract public class Link {
      * @return The current node
      */
     @Nullable
-    @SuppressWarnings("WeakerAccess")
+    @Contract("true -> !null")
     public LavalinkSocket getNode(boolean selectIfAbsent) {
         if (selectIfAbsent && node == null) {
             node = lavalink.loadBalancer.determineBestSocket(guild);
@@ -174,7 +175,7 @@ abstract public class Link {
     /**
      * @return The channel we are currently connect to
      */
-    @SuppressWarnings({"WeakerAccess", "unused"})
+    @SuppressWarnings("unused")
     @Nullable
     public String getChannel() {
         if (channel == null || state == State.DESTROYED || state == State.NOT_CONNECTED) return null;
@@ -236,7 +237,6 @@ abstract public class Link {
         out.put("guildId", Long.toString(guild));
         out.put("event", lastVoiceServerUpdate);
 
-        //noinspection ConstantConditions
         getNode(true).send(out.toString());
         setState(Link.State.CONNECTED);
     }

@@ -53,6 +53,7 @@ public class LavalinkPlayer implements IPlayer {
     private final Link link;
     private List<IPlayerEventListener> listeners = new CopyOnWriteArrayList<>();
     private volatile ConcurrentLinkedQueue<PlayerEvent> heldEvents = null;
+    private volatile boolean hasReleasedEvents = false;
 
     /**
      * Constructor only for internal use
@@ -242,6 +243,15 @@ public class LavalinkPlayer implements IPlayer {
      * @see Link#releaseHeldEvents()
      */
     public void releaseEvent() {
+        if (hasReleasedEvents) {
+            log.warn("Attempt to release events more than once");
+            return;
+        }
+        if (heldEvents == null) {
+            log.warn("Attempt to release events for player that never held them");
+            return;
+        }
+        hasReleasedEvents = true;
         ConcurrentLinkedQueue<PlayerEvent> queue = heldEvents;
         heldEvents = null;
         queue.forEach(this::emitEvent0);

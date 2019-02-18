@@ -83,6 +83,7 @@ abstract public class Link {
 
     public void disconnect() {
         setState(State.DISCONNECTING);
+        lastVoiceServerUpdate = null;
         queueAudioDisconnect();
     }
 
@@ -238,7 +239,7 @@ abstract public class Link {
         out.put("event", lastVoiceServerUpdate);
 
         getNode(true).send(out.toString());
-        setState(Link.State.CONNECTED);
+        setState(State.CONNECTED);
     }
 
     public JSONObject getLastVoiceServerUpdate() {

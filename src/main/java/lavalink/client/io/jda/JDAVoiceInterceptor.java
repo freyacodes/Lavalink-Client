@@ -21,7 +21,7 @@ public class JDAVoiceInterceptor implements VoiceDispatchInterceptor {
 
     @Override
     public void onVoiceServerUpdate(@Nonnull VoiceServerUpdate update) {
-        JSONObject content = update.getJSON().getJSONObject("d");
+        JSONObject content = new JSONObject(update.toData().getObject("d").toMap());
 
         // Get session
         Guild guild = update.getGuild();

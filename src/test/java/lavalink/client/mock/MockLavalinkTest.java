@@ -1,3 +1,8 @@
+/*
+ * Written by TheMulti0, 2019
+ * https://github.com/TheMulti0
+ */
+
 package lavalink.client.mock;
 
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;

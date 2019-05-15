@@ -38,8 +38,8 @@ public abstract class ReusableWebSocket {
 
     private DisposableSocket socket;
     private final URI serverUri;
-    public final Draft draft;
-    public final Map<String, String> headers;
+    private final Draft draft;
+    private final Map<String, String> headers;
     private final int connectTimeout;
     private final ReusableWebSocket instance = this; // For use in inner class
     private boolean isUsed = false;

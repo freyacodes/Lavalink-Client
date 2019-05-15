@@ -66,6 +66,7 @@ dependencies {
     compile group: 'org.java-websocket', name: 'Java-WebSocket', version: javaWebSocketVersion
     compile group: 'org.slf4j', name: 'slf4j-api', version: slf4jVersion
     compile group: 'org.json', name: 'json', version: jsonOrgVersion
+    compile "org.mockito:mockito-core:2.+"
     compileOnly group: 'net.dv8tion', name: 'JDA', version: jdaVersion
     testCompile group: 'net.dv8tion', name: 'JDA', version: jdaVersion
     compileOnly group: 'com.github.spotbugs', name: 'spotbugs-annotations', version: spotbugsAnnotationsVersion

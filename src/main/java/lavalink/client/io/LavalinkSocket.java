@@ -131,7 +131,7 @@ public class LavalinkSocket extends ReusableWebSocket {
                     ex = new FriendlyException(
                             jsonEx.getString("message"),
                             FriendlyException.Severity.valueOf(jsonEx.getString("severity")),
-                            new Exception(jsonEx.getString("cause"))
+                            new RuntimeException(jsonEx.getString("cause"))
                     );
                 } else {
                     ex = new RemoteTrackException(json.getString("error"));

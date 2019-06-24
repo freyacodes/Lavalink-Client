@@ -84,6 +84,7 @@ You may not register more than one Lavalink instance per shard.
 ```java
 new JDABuilder(AccountType.BOT)
         .addEventListener(myJdaLavalinkInstance)
+        .setVoiceDispatchInterceptor(myJdaLavalinkInstance.getVoiceInterceptor())
         ...
 ```
 

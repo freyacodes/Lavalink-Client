@@ -22,6 +22,7 @@
 
 package lavalink.client.io;
 
+import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
@@ -124,9 +125,20 @@ public class LavalinkSocket extends ReusableWebSocket {
                 );
                 break;
             case "TrackExceptionEvent":
+                Exception ex;
+                if (json.has("exception")) {
+                    JSONObject jsonEx = json.getJSONObject("exception");
+                    ex = new FriendlyException(
+                            jsonEx.getString("message"),
+                            FriendlyException.Severity.valueOf(jsonEx.getString("severity")),
+                            new RuntimeException(jsonEx.getString("cause"))
+                    );
+                } else {
+                    ex = new RemoteTrackException(json.getString("error"));
+                }
+
                 event = new TrackExceptionEvent(player,
-                        LavalinkUtil.toAudioTrack(json.getString("track")),
-                        new RemoteTrackException(json.getString("error"))
+                        LavalinkUtil.toAudioTrack(json.getString("track")), ex
                 );
                 break;
             case "TrackStuckEvent":

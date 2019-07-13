@@ -10,8 +10,13 @@ import static com.sedmelluq.discord.lavaplayer.filter.equalizer.Equalizer.BAND_C
 
 @SuppressWarnings("unused")
 public class Filters {
+
+    @SuppressWarnings("WeakerAccess")
+    public static float DEFAULT_VOLUME = 1.0f;
+
     private final LavalinkPlayer player;
-    private float volume = 1.0f;
+    private final Runnable onCommit;
+    private float volume = DEFAULT_VOLUME;
     private float[] bands = new float[BAND_COUNT];
     private Karaoke karaoke = null;
     private Timescale timescale = null;
@@ -21,8 +26,9 @@ public class Filters {
     /**
      * Intended for internal use only
      */
-    public Filters(LavalinkPlayer player) {
+    public Filters(LavalinkPlayer player, Runnable onCommit) {
         this.player = player;
+        this.onCommit = onCommit;
     }
 
     @Nonnull
@@ -106,12 +112,26 @@ public class Filters {
     }
 
     /**
+     * Resets this player's filters.
+     */
+    @CheckReturnValue
+    public Filters clear() {
+        volume = DEFAULT_VOLUME;
+        bands = new float[BAND_COUNT];
+        timescale = null;
+        karaoke = null;
+        trebolo = null;
+        vibrato = null;
+        return this;
+    }
+
+    /**
      * Commits these filters to the Lavalink server.
      *
      * The client may choose to commit changes at any time, even if this method is never invoked.
      */
     public void commit() {
-        // TODO
+        onCommit.run();
     }
 
 }

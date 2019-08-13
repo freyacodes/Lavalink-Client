@@ -41,10 +41,15 @@ Jitpack versioning is based on git branches and commit hashes, or tags. Eg:
 ab123c4d
 master-SNAPSHOT
 dev-SNAPSHOT
-3.0
+3.2
 ```
 
+***Note:*** The above versions are for example purposes only.
+
 Version tags of this client are expected to roughly follow lavalink server versioning.
+
+## Migrating from v3 to v4
+Version 4 drops JDA3 support in favour of JDA4. This uses a non-internal JDA API to intercept voice handling. This requires adding an interceptor to your `JDABuilder` or `DefaultShardManagerBuilder`. See examples of using `#setVoiceDispatchInterceptor` below.
 
 ## Migrating from v2 to v3
 The v3 client has been made to be generic, meaning that the base client can now be used without JDA.

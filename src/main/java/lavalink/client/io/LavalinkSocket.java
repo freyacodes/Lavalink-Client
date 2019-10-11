@@ -35,6 +35,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.URI;
@@ -49,6 +50,8 @@ public class LavalinkSocket extends ReusableWebSocket {
     private static final int TIMEOUT_MS = 5000;
     @NonNull
     private final String name;
+    @Nonnull
+    private final String password;
     @NonNull
     private final Lavalink lavalink;
     @Nullable
@@ -62,6 +65,7 @@ public class LavalinkSocket extends ReusableWebSocket {
     LavalinkSocket(@NonNull String name, @NonNull Lavalink lavalink, @NonNull URI serverUri, Draft protocolDraft, Map<String, String> headers) {
         super(serverUri, protocolDraft, headers, TIMEOUT_MS);
         this.name = name;
+        this.password = headers.get("Authorization");
         this.lavalink = lavalink;
         this.remoteUri = serverUri;
     }
@@ -226,6 +230,11 @@ public class LavalinkSocket extends ReusableWebSocket {
     @NonNull
     public String getName() {
         return name;
+    }
+
+    @NonNull
+    public String getPassword() {
+        return password;
     }
 
     @Override

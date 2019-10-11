@@ -1,5 +1,6 @@
 package lavalink.client.io.jda;
 
+import lavalink.client.io.LavalinkRestClient;
 import lavalink.client.io.Link;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
@@ -21,10 +22,16 @@ public class JdaLink extends Link {
 
     private static final Logger log = LoggerFactory.getLogger(JdaLink.class);
     private final JdaLavalink lavalink;
+    private final LavalinkRestClient restClient;
 
     JdaLink(JdaLavalink lavalink, String guildId) {
         super(lavalink, guildId);
         this.lavalink = lavalink;
+        this.restClient = new LavalinkRestClient(this);
+    }
+
+    public LavalinkRestClient getRestClient() {
+        return restClient;
     }
 
     public void connect(VoiceChannel voiceChannel) {

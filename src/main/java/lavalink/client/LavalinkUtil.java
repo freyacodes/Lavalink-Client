@@ -33,6 +33,7 @@ import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager
 import com.sedmelluq.discord.lavaplayer.tools.io.MessageInput;
 import com.sedmelluq.discord.lavaplayer.tools.io.MessageOutput;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import lavalink.client.player.LavalinkPlayer;
 import org.java_websocket.util.Base64;
 
 import java.io.ByteArrayInputStream;
@@ -53,6 +54,24 @@ public class LavalinkUtil {
         PLAYER_MANAGER.registerSourceManager(new TwitchStreamAudioSourceManager());
         PLAYER_MANAGER.registerSourceManager(new VimeoAudioSourceManager());
         PLAYER_MANAGER.registerSourceManager(new HttpAudioSourceManager());
+    }
+
+    /**
+     *
+     * @param player the lavalink player that holds the track with data
+     * @param message the Base64 audio track
+     * @return the AudioTrack with the user data stored in the player
+     * @throws IOException if there is an IO problem
+     */
+    public static AudioTrack toAudioTrackWithData(LavalinkPlayer player, String message) throws IOException{
+        AudioTrack storedTrack = player.getPlayingTrack();
+        AudioTrack messageTrack = toAudioTrack(message);
+
+        if (storedTrack != null && storedTrack.getUserData() != null) {
+            messageTrack.setUserData(storedTrack.getUserData());
+        }
+
+        return messageTrack;
     }
 
     /**

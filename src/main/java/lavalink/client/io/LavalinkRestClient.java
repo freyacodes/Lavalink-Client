@@ -6,7 +6,6 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.BasicAudioPlaylist;
 import com.sedmelluq.lava.common.tools.DaemonThreadFactory;
 import lavalink.client.LavalinkUtil;
-import lavalink.client.io.LavalinkSocket;
 import lavalink.client.io.jda.JdaLink;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;

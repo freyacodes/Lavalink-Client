@@ -43,12 +43,18 @@ repositories {
 ext {
     //@formatter:off
     gradleVersion               = '4.9'
-
-    lavaplayerVersion           = '1.3.19'
+Tilmeldte personer
+Navn	Ankomst	Afgang
+Knud Jøgensen	fredag klokken 18	lørdag klokken 19
+Tom Kirkebæk	25. okt kl. 18:00	27. okt kl. 15:00
+Michael	1 nov	Aldrig
+Erik Petersen	18	sandsynligvis før kl. 12
+Jacob
+    lavaplayerVersion           = '1.3.22.pbjtest3'
     javaWebSocketVersion        = '1.3.8'
     slf4jVersion                = '1.7.25'
     jsonOrgVersion              = '20180130'
-    jdaVersion                  = '4.BETA.0_32'
+    jdaVersion                  = '3.8.3_463'
     spotbugsAnnotationsVersion  = '3.1.3'
     prometheusVersion           = '0.4.0'
 

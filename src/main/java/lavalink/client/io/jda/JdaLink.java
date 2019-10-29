@@ -43,7 +43,7 @@ public class JdaLink extends Link {
                     "Please wait until this Guild is available to open a connection.");
         final Member self = channel.getGuild().getSelfMember();
         if (!self.hasPermission(channel, Permission.VOICE_CONNECT) && !self.hasPermission(channel, Permission.VOICE_MOVE_OTHERS))
-            throw new InsufficientPermissionException(channel, Permission.VOICE_CONNECT);
+            throw new InsufficientPermissionException(Permission.VOICE_CONNECT);
 
         //If we are already connected to this VoiceChannel, then do nothing.
         if (checkChannel && channel.equals(channel.getGuild().getSelfMember().getVoiceState().getChannel()))
@@ -55,7 +55,7 @@ public class JdaLink extends Link {
                 if (userLimit > 0                                                      // If there is a userlimit
                         && userLimit <= channel.getMembers().size()                    // if that userlimit is reached
                         && !self.hasPermission(channel, Permission.VOICE_MOVE_OTHERS)) // If we don't have voice move others permissions
-                    throw new InsufficientPermissionException(channel, Permission.VOICE_MOVE_OTHERS, // then throw exception!
+                    throw new InsufficientPermissionException(Permission.VOICE_MOVE_OTHERS, // then throw exception!
                             "Unable to connect to VoiceChannel due to userlimit! Requires permission VOICE_MOVE_OTHERS to bypass");
             }
         }

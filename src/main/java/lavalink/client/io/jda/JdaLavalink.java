@@ -4,16 +4,20 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
 import lavalink.client.LavalinkUtil;
 import lavalink.client.io.Lavalink;
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.events.GenericEvent;
-import net.dv8tion.jda.api.events.ReconnectedEvent;
-import net.dv8tion.jda.api.events.channel.voice.VoiceChannelDeleteEvent;
-import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
-import net.dv8tion.jda.api.hooks.EventListener;
+import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.events.Event;
+import net.dv8tion.jda.core.events.ReadyEvent;
+import net.dv8tion.jda.core.events.ReconnectedEvent;
+import net.dv8tion.jda.core.events.channel.voice.VoiceChannelDeleteEvent;
+import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
+import net.dv8tion.jda.core.handle.SocketHandler;
+import net.dv8tion.jda.core.hooks.EventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
 import java.util.function.Function;
 
 public class JdaLavalink extends Lavalink<JdaLink> implements EventListener {
@@ -21,22 +25,20 @@ public class JdaLavalink extends Lavalink<JdaLink> implements EventListener {
     private static final Logger log = LoggerFactory.getLogger(JdaLavalink.class);
     private final Function<Integer, JDA> jdaProvider;
     private boolean autoReconnect = true;
-    private final JDAVoiceInterceptor voiceInterceptor;
 
     public JdaLavalink(String userId, int numShards, Function<Integer, JDA> jdaProvider) {
         super(userId, numShards);
         this.jdaProvider = jdaProvider;
-        this.voiceInterceptor = new JDAVoiceInterceptor(this);
-    }
-
-    @SuppressWarnings("unused")
-    public boolean getAutoReconnect() {
-        return autoReconnect;
     }
 
     @SuppressWarnings("unused")
     public void setAutoReconnect(boolean autoReconnect) {
         this.autoReconnect = autoReconnect;
+    }
+
+    @SuppressWarnings("unused")
+    public boolean getAutoReconnect() {
+        return autoReconnect;
     }
 
     @SuppressWarnings("WeakerAccess")
@@ -63,13 +65,13 @@ public class JdaLavalink extends Lavalink<JdaLink> implements EventListener {
         return jdaProvider.apply(LavalinkUtil.getShardFromSnowflake(snowflake, numShards));
     }
 
-    public JDAVoiceInterceptor getVoiceInterceptor() {
-        return voiceInterceptor;
-    }
-
     @Override
-    public void onEvent(GenericEvent event) {
-        if (event instanceof ReconnectedEvent) {
+    public void onEvent(Event event) {
+        if (event instanceof ReadyEvent) {
+            Map<String, SocketHandler> handlers = ((JDAImpl) event.getJDA()).getClient().getHandlers();
+            handlers.put("VOICE_SERVER_UPDATE", new VoiceServerUpdateInterceptor(this, (JDAImpl) event.getJDA()));
+            handlers.put("VOICE_STATE_UPDATE", new VoiceStateUpdateInterceptor(this, (JDAImpl) event.getJDA()));
+        } else if (event instanceof ReconnectedEvent) {
             if (autoReconnect) {
                 getLinksMap().forEach((guildId, link) -> {
                     try {

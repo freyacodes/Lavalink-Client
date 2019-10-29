@@ -1,13 +1,16 @@
 package lavalink.client.io.jda;
 
 import lavalink.client.io.Link;
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.VoiceChannel;
-import net.dv8tion.jda.api.exceptions.GuildUnavailableException;
-import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.VoiceChannel;
+import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.exceptions.GuildUnavailableException;
+import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.core.requests.WebSocketClient;
+import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,9 +55,11 @@ public class JdaLink extends Link {
         if (channel.getGuild().getSelfMember().getVoiceState().inVoiceChannel()) {
             final int userLimit = channel.getUserLimit(); // userLimit is 0 if no limit is set!
             if (!self.isOwner() && !self.hasPermission(Permission.ADMINISTRATOR)) {
-                if (userLimit > 0                                                      // If there is a userlimit
-                        && userLimit <= channel.getMembers().size()                    // if that userlimit is reached
-                        && !self.hasPermission(channel, Permission.VOICE_MOVE_OTHERS)) // If we don't have voice move others permissions
+                final long perms = PermissionUtil.getExplicitPermission(channel, self);
+                final long voicePerm = Permission.VOICE_MOVE_OTHERS.getRawValue();
+                if (userLimit > 0                                                   // If there is a userlimit
+                        && userLimit <= channel.getMembers().size()                 // if that userlimit is reached
+                        && (perms & voicePerm) != voicePerm)                        // If we don't have voice move others permissions
                     throw new InsufficientPermissionException(Permission.VOICE_MOVE_OTHERS, // then throw exception!
                             "Unable to connect to VoiceChannel due to userlimit! Requires permission VOICE_MOVE_OTHERS to bypass");
             }
@@ -70,9 +75,14 @@ public class JdaLink extends Link {
         return lavalink.getJdaFromSnowflake(String.valueOf(guild));
     }
 
+
+    private WebSocketClient getMainWs() {
+        return ((JDAImpl) getJda()).getClient();
+    }
+
     @Override
     protected void removeConnection() {
-        // JDA handles this for us
+        getMainWs().removeAudioConnection(guild);
     }
 
     @Override
@@ -80,7 +90,7 @@ public class JdaLink extends Link {
         Guild g = getJda().getGuildById(guild);
 
         if (g != null) {
-            getJda().getDirectAudioController().disconnect(g);
+            getMainWs().queueAudioDisconnect(g);
         } else {
             log.warn("Attempted to disconnect, but guild {} was not found", guild);
         }
@@ -90,7 +100,7 @@ public class JdaLink extends Link {
     protected void queueAudioConnect(long channelId) {
         VoiceChannel vc = getJda().getVoiceChannelById(channelId);
         if (vc != null) {
-            getJda().getDirectAudioController().connect(vc);
+            getMainWs().queueAudioConnect(vc);
         } else {
             log.warn("Attempted to connect, but voice channel {} was not found", channelId);
         }

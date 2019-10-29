@@ -33,10 +33,10 @@ import lavalink.client.io.jda.JdaLavalink;
 import lavalink.client.io.jda.JdaLink;
 import lavalink.client.player.IPlayer;
 import lavalink.client.player.event.PlayerEventListenerAdapter;
-import net.dv8tion.jda.api.AccountType;
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.core.AccountType;
+import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.JDABuilder;
+import net.dv8tion.jda.core.entities.VoiceChannel;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.AfterAll;
@@ -86,15 +86,15 @@ class LavalinkTest {
         JDABuilder jdaBuilder = new JDABuilder(AccountType.BOT)
                 .setToken(getSystemProperty(PROPERTY_TOKEN));
 
-        JDA selfId = jdaBuilder.build();
-        lavalink = new JdaLavalink(selfId.retrieveApplicationInfo().submit().get(30, TimeUnit.SECONDS).getId(), 1, integer -> jda);
+        JDA selfId = jdaBuilder.buildAsync();
+        lavalink = new JdaLavalink(selfId.asBot().getApplicationInfo().submit().get(30, TimeUnit.SECONDS).getId(), 1, integer -> jda);
         selfId.shutdown();
 
         lavalink.addNode(new URI("ws://localhost:5555"), "youshallnotpass");
 
         jda = jdaBuilder
-                .addEventListeners(lavalink)
-                .build();
+                .addEventListener(lavalink)
+                .buildAsync();
 
         Thread.sleep(2000);
 

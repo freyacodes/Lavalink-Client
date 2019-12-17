@@ -41,10 +41,15 @@ Jitpack versioning is based on git branches and commit hashes, or tags. Eg:
 ab123c4d
 master-SNAPSHOT
 dev-SNAPSHOT
-3.0
+3.2
 ```
 
+***Note:*** The above versions are for example purposes only.
+
 Version tags of this client are expected to roughly follow lavalink server versioning.
+
+## Migrating from v3 to v4
+Version 4 drops JDA3 support in favour of JDA4. This uses a non-internal JDA API to intercept voice handling. This requires adding an interceptor to your `JDABuilder` or `DefaultShardManagerBuilder`. See examples of using `#setVoiceDispatchInterceptor` below.
 
 ## Migrating from v2 to v3
 The v3 client has been made to be generic, meaning that the base client can now be used without JDA.
@@ -84,6 +89,7 @@ You may not register more than one Lavalink instance per shard.
 ```java
 new JDABuilder(AccountType.BOT)
         .addEventListener(myJdaLavalinkInstance)
+        .setVoiceDispatchInterceptor(myJdaLavalinkInstance.getVoiceInterceptor())
         ...
 ```
 
@@ -108,8 +114,7 @@ The `IPlayer` more or less works like a drop-in replacement for Lavaplayer's `Au
 **Warning:** You should not use JDA's `AudioManager#openAudioConnection()` or `AudioManager#closeAudioConnection()` when Lavalink is being used. Use `Link` instead.
 
 ### Using Lavalink and Lavaplayer in the same codebase
-One of the requirements for Lavalink to work with FredBoat was to make Lavalink optional, so we can support selfhosters who do not want to run Lavalink.
-In FredBoat this is accomplished with the [LavalinkManager](https://github.com/Frederikam/FredBoat/blob/master/FredBoat/src/main/java/fredboat/audio/player/LavalinkManager.java) class.
+One of the requirements for Lavalink to work with FredBoat was to make Lavalink optional, so we could support selfhosters who do not want to run Lavalink. (This has since been removed from FredBoat).
 
 Lavalink-Client adds an abstraction layer:
 * `IPlayer` in place of `AudioPlayer`

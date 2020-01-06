@@ -120,4 +120,8 @@ public class LavalinkUtil {
         return (int) ((Long.parseLong(snowflake) >> 22) % numShards);
     }
 
+    public static AudioPlayerManager getPlayerManager() {
+        return PLAYER_MANAGER;
+    }
+
 }

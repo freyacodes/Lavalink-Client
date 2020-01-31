@@ -30,7 +30,6 @@ import lavalink.client.player.event.IPlayerEventListener;
 import lavalink.client.player.event.PlayerEvent;
 import lavalink.client.player.event.PlayerPauseEvent;
 import lavalink.client.player.event.PlayerResumeEvent;
-import lavalink.client.player.event.TrackStartEvent;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -99,7 +98,6 @@ public class LavalinkPlayer implements IPlayer {
 
             updateTime = System.currentTimeMillis();
             this.track = track;
-            emitEvent(new TrackStartEvent(this, track));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

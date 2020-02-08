@@ -1,12 +1,12 @@
 package lavalink.client.io.jda;
 
+import lavalink.client.io.GuildUnavailableException;
 import lavalink.client.io.Link;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.VoiceChannel;
-import net.dv8tion.jda.api.exceptions.GuildUnavailableException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +38,7 @@ public class JdaLink extends Link {
         if (!channel.getGuild().equals(getJda().getGuildById(guild)))
             throw new IllegalArgumentException("The provided VoiceChannel is not a part of the Guild that this AudioManager handles." +
                     "Please provide a VoiceChannel from the proper Guild");
-        if (!channel.getGuild().isAvailable())
+        if (!channel.getJDA().isUnavailable(channel.getGuild().getIdLong()))
             throw new GuildUnavailableException("Cannot open an Audio Connection with an unavailable guild. " +
                     "Please wait until this Guild is available to open a connection.");
         final Member self = channel.getGuild().getSelfMember();

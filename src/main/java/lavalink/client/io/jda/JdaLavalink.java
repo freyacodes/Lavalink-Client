@@ -29,6 +29,14 @@ public class JdaLavalink extends Lavalink<JdaLink> implements EventListener {
         this.voiceInterceptor = new JDAVoiceInterceptor(this);
     }
 
+    /**
+     * Creates a Lavalink instance.
+     * N.B: You must set the user ID before adding a node
+     */
+    public JdaLavalink(int numShards, Function<Integer, JDA> jdaProvider) {
+        this(null, numShards, jdaProvider);
+    }
+
     @SuppressWarnings("unused")
     public boolean getAutoReconnect() {
         return autoReconnect;

@@ -44,11 +44,11 @@ ext {
     //@formatter:off
     gradleVersion               = '4.9'
 
-    lavaplayerVersion           = '1.3.32'
+    lavaplayerVersion           = '1.3.46'
     javaWebSocketVersion        = '1.3.8'
     slf4jVersion                = '1.7.25'
     jsonOrgVersion              = '20180130'
-    jdaVersion                  = '4.1.0_96'
+    jdaVersion                  = '4.1.1_135'
     spotbugsAnnotationsVersion  = '3.1.3'
     prometheusVersion           = '0.4.0'
 

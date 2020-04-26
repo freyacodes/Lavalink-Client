@@ -1,4 +1,4 @@
-package lavalink.client.io.jda;
+package lavalink.client.io.d4j;
 
 import discord4j.core.object.VoiceState;
 import discord4j.core.object.entity.Guild;

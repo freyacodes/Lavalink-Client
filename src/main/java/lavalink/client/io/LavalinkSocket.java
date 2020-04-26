@@ -58,12 +58,24 @@ public class LavalinkSocket extends ReusableWebSocket {
     @NonNull
     private final URI remoteUri;
     private boolean available = false;
+    private final String password;
+    private final LavalinkRestClient restClient;
 
     LavalinkSocket(@NonNull String name, @NonNull Lavalink lavalink, @NonNull URI serverUri, Draft protocolDraft, Map<String, String> headers) {
         super(serverUri, protocolDraft, headers, TIMEOUT_MS);
         this.name = name;
         this.lavalink = lavalink;
         this.remoteUri = serverUri;
+        this.password = headers.get("Authorization");
+        this.restClient = new LavalinkRestClient(this);
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public LavalinkRestClient getRestClient() {
+        return restClient;
     }
 
     @Override

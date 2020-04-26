@@ -59,6 +59,10 @@ abstract public class Link {
         return player;
     }
 
+    public LavalinkRestClient getRestClient() {
+        return getNode(true).getRestClient();
+    }
+
     public Lavalink getLavalink() {
         return lavalink;
     }
@@ -154,7 +158,9 @@ abstract public class Link {
     public LavalinkSocket getNode(boolean selectIfAbsent) {
         if (selectIfAbsent && node == null) {
             node = lavalink.loadBalancer.determineBestSocket(guild);
-            if (player != null) player.onNodeChange();
+            if (player != null) {
+                player.onNodeChange();
+            }
         }
         return node;
     }
@@ -165,7 +171,9 @@ abstract public class Link {
     @SuppressWarnings({"WeakerAccess", "unused"})
     @Nullable
     public String getChannel() {
-        if (channel == null || state == State.DESTROYED || state == State.NOT_CONNECTED) return null;
+        if (channel == null || state == State.DESTROYED || state == State.NOT_CONNECTED) {
+            return null;
+        }
 
         return channel;
     }
@@ -187,8 +195,9 @@ abstract public class Link {
     }
 
     public void setState(@NonNull State state) {
-        if (this.state == State.DESTROYED && state != State.DESTROYED)
+        if (this.state == State.DESTROYED && state != State.DESTROYED) {
             throw new IllegalStateException("Cannot change state to " + state + " when state is " + State.DESTROYED);
+        }
         if (this.state == State.DESTROYING && state != State.DESTROYED) {
             throw new IllegalStateException("Cannot change state to " + state + " when state is " + State.DESTROYING);
         }

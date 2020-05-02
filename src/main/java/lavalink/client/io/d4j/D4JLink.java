@@ -109,15 +109,7 @@ public class D4JLink extends Link {
     protected void queueAudioConnect(long channelId) {
         lavalink.getGateway().getChannelById(Snowflake.of(channelId))
                 .ofType(VoiceChannel.class)
-                .flatMap(channel -> channel.getClient().getGatewayClientGroup().unicast(ShardGatewayPayload.voiceStateUpdate(
-                        VoiceStateUpdate.builder()
-                                .guildId(channel.getGuildId().asString())
-                                .channelId(channel.getId().asString())
-                                .selfDeaf(false)
-                                .selfMute(false)
-                                .build(),
-                        (int) ((channel.getId().asLong() >> 22) % channel.getClient().getGatewayClientGroup().getShardCount())
-                )))
+                .flatMap(channel -> channel.sendConnectVoiceState(false, false))
                 .subscribe();
     }
 

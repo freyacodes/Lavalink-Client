@@ -90,12 +90,17 @@ public abstract class Lavalink<T extends Link> {
      * @param password
      *         password of the node to be added
      * @throws IllegalStateException if no userId has been set.
+     * @throws IllegalArgumentException if a node with that name already exists.
      * @see #setUserId(String)
      */
     @SuppressWarnings("WeakerAccess")
     public void addNode(@NonNull String name, @NonNull URI serverUri, @NonNull String password) {
         if (userId == null) {
             throw new IllegalStateException("We need a userId to connect to Lavalink");
+        }
+
+        if (nodes.stream().anyMatch(sock -> sock.getName().equals(name))) {
+            throw new IllegalArgumentException("A node with the name " + name + " already exists.");
         }
 
         HashMap<String, String> headers = new HashMap<>();

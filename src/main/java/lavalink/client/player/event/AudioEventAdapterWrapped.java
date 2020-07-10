@@ -63,7 +63,8 @@ public abstract class AudioEventAdapterWrapped extends AudioEventAdapter impleme
         } else if (event instanceof TrackStuckEvent) {
             onEvent(new com.sedmelluq.discord.lavaplayer.player.event.TrackStuckEvent(player,
                     ((TrackStuckEvent) event).getTrack(),
-                    ((TrackStuckEvent) event).getThresholdMs()
+                    ((TrackStuckEvent) event).getThresholdMs(),
+                    new StackTraceElement[0]
             ));
         }
     }

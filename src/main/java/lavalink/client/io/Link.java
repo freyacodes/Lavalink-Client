@@ -63,6 +63,13 @@ abstract public class Link {
         return lavalink;
     }
 
+    public LavalinkRestClient getRestClient() {
+        final LavalinkSocket node = getNode(true);
+        if (node == null) throw new IllegalStateException("No available nodes!");
+
+        return node.getRestClient();
+    }
+
     @SuppressWarnings("unused")
     public void resetPlayer() {
         player = null;

@@ -5,7 +5,6 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.BasicAudioPlaylist;
-import com.sedmelluq.lava.common.tools.DaemonThreadFactory;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import lavalink.client.LavalinkUtil;
 import org.apache.http.HttpEntity;
@@ -25,8 +24,6 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -52,12 +49,10 @@ public final class LavalinkRestClient {
     };
 
     private final LavalinkSocket socket;
-    private final ExecutorService executorService;
     private Consumer<HttpClientBuilder> builderConsumer;
 
     public LavalinkRestClient(final LavalinkSocket socket) {
         this.socket = socket;
-        this.executorService = Executors.newCachedThreadPool(new DaemonThreadFactory("Lavalink-RestExecutor-" + socket.getName()));
     }
 
     public void setHttpClientBuilder(final Consumer<HttpClientBuilder> clientBuilder) {
@@ -119,19 +114,16 @@ public final class LavalinkRestClient {
     }
 
     private CompletableFuture<JSONObject> load(final String identifier) {
-        final CompletableFuture<JSONObject> future = new CompletableFuture<>();
-
-        executorService.submit(() -> {
+        return CompletableFuture.supplyAsync(() -> {
             try {
                 final String requestURL = buildBaseAddress(socket) + URLEncoder.encode(identifier, "UTF-8");
-                final JSONObject response = apiGet(requestURL, socket.getPassword());
-                future.complete(response);
+                return apiGet(requestURL, socket.getPassword());
             } catch (final Throwable exception) {
-                future.completeExceptionally(exception);
+                exception.printStackTrace();
             }
-        });
 
-        return future;
+            return null;
+        });
     }
 
     private String buildBaseAddress(final LavalinkSocket socket) {
@@ -163,10 +155,6 @@ public final class LavalinkRestClient {
 
         final String response = EntityUtils.toString(entity);
         return new JSONObject(response);
-    }
-
-    void shutdownExecutor() {
-        executorService.shutdown();
     }
 
     private static final class TrackLoadResultHandler {

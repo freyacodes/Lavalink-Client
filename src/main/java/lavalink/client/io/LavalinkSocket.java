@@ -80,8 +80,6 @@ public class LavalinkSocket extends ReusableWebSocket {
     public void onOpen(ServerHandshake handshakeData) {
         log.info("Received handshake from server");
         available = true;
-        if (restClient == null) restClient = new LavalinkRestClient(this);
-
         lavalink.loadBalancer.onNodeConnect(this);
         reconnectsAttempted = 0;
     }
@@ -186,10 +184,6 @@ public class LavalinkSocket extends ReusableWebSocket {
         } else {
             log.warn("Connection to " + getRemoteUri() + " closed unexpectedly with reason " + code + ": " + reason + " :: Remote=" + remote);
         }
-
-        restClient.shutdownExecutor();
-        restClient = null;
-
         lavalink.loadBalancer.onNodeDisconnect(this);
     }
 

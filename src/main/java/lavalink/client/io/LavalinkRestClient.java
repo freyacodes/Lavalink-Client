@@ -1,6 +1,30 @@
+/*
+ * Copyright (c) 2017 Frederik Ar. Mikkelsen & NoobLance
+ * Copyright (c) 2020 Callum Jay Seabrook
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 package lavalink.client.io;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
@@ -23,7 +47,7 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -31,6 +55,9 @@ import java.util.function.Function;
 public final class LavalinkRestClient {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LavalinkRestClient.class);
+
+    private static final String YOUTUBE_SEARCH_PREFIX = "ytsearch:";
+    private static final String SOUNDCLOUD_SEARCH_PREFIX = "scsearch:";
 
     private static final Function<JSONObject, List<AudioTrack>> SEARCH_TRANSFORMER = loadResult -> {
         final List<AudioTrack> tracks = new ArrayList<>();
@@ -59,18 +86,43 @@ public final class LavalinkRestClient {
         this.builderConsumer = clientBuilder;
     }
 
+    /**
+     * Retrieves a search result from Lavalink's Track Loading API (which retrieves it from
+     * YouTube in this case) and uses the {@code SEARCH_TRANSFORMER search transformer} to
+     * transform it in to a list of {@code AudioTrack audio tracks}
+     *
+     * @param query the search query to give to the REST API
+     * @return a list of YouTube search results as {@code AudioTrack audio tracks}
+     */
     @NonNull
     public CompletableFuture<List<AudioTrack>> getYoutubeSearchResult(final String query) {
-        return load("ytsearch:" + query)
+        return load(YOUTUBE_SEARCH_PREFIX + query)
                 .thenApplyAsync(SEARCH_TRANSFORMER);
     }
 
+    /**
+     * Retrieves a search result from Lavalink's Track Loading API (which retrieves it from
+     * SoundCloud in this case) and uses the {@code SEARCH_TRANSFORMER search transformer}
+     * to transform it in to a list of {@code AudioTrack audio tracks}
+     *
+     * @param query the search query to give to the REST API
+     * @return a list of SoundCloud search results as {@code AudioTrack audio tracks}
+     */
     @NonNull
     public CompletableFuture<List<AudioTrack>> getSoundcloudSearchResult(final String query) {
-        return load("scsearch:" + query)
+        return load(SOUNDCLOUD_SEARCH_PREFIX + query)
                 .thenApplyAsync(SEARCH_TRANSFORMER);
     }
 
+    /**
+     * Loads a track from Lavalink's Track Loading API and sends the results to the provided
+     * {@code AudioLoadResultHandler callback} to handle them
+     *
+     * @param identifier the identifier for the track
+     * @param callback the result handler that will handle the result of the load
+     *
+     * @see AudioPlayerManager#loadItem
+     */
     @NonNull
     public CompletableFuture<Void> loadItem(final String identifier, final AudioLoadResultHandler callback) {
         return load(identifier)
@@ -119,7 +171,7 @@ public final class LavalinkRestClient {
                 final String requestURL = buildBaseAddress(socket) + URLEncoder.encode(identifier, "UTF-8");
                 return apiGet(requestURL, socket.getPassword());
             } catch (final Throwable exception) {
-                exception.printStackTrace();
+                LOGGER.error("Failed to load track with identifier $identifier", exception);
             }
 
             return null;

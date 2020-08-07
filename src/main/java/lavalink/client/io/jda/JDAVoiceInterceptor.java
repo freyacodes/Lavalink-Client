@@ -25,8 +25,6 @@ public class JDAVoiceInterceptor implements VoiceDispatchInterceptor {
 
         // Get session
         Guild guild = update.getGuild();
-        if (guild == null)
-            throw new IllegalArgumentException("Attempted to start audio connection with Guild that doesn't exist! JSON: " + content);
 
         lavalink.getLink(guild).onVoiceServerUpdate(content, guild.getSelfMember().getVoiceState().getSessionId());
     }

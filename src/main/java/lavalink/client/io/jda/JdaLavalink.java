@@ -67,17 +67,21 @@ public class JdaLavalink extends Lavalink<JdaLink> implements EventListener {
         return getExistingLink(guild.getId());
     }
 
+    /**
+     * May produce NullPointerException if JDA provider has not been initialised
+     */
     @SuppressWarnings({"WeakerAccess", "unused"})
-    @NonNull
+    @Nullable
     public JDA getJda(int shardId) {
-        assert jdaProvider != null;
         return jdaProvider.apply(shardId);
     }
 
+    /**
+     * May produce NullPointerException if JDA provider has not been initialised
+     */
     @SuppressWarnings("WeakerAccess")
-    @NonNull
+    @Nullable
     public JDA getJdaFromSnowflake(String snowflake) {
-        assert jdaProvider != null;
         return jdaProvider.apply(LavalinkUtil.getShardFromSnowflake(snowflake, numShards));
     }
 

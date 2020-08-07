@@ -25,6 +25,7 @@ package lavalink.client.io;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
+import com.sedmelluq.discord.lavaplayer.player.FunctionalResultHandler;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
@@ -112,43 +113,41 @@ public final class LavalinkRestClient {
     @NonNull
     public CompletableFuture<Void> loadItem(final String identifier, final AudioLoadResultHandler callback) {
         return load(identifier)
-                .thenAcceptAsync(consumeCallback(callback));
+                .thenAcceptAsync(loadResult -> consumeCallback(loadResult, callback));
     }
 
-    private Consumer<JSONObject> consumeCallback(final AudioLoadResultHandler callback) {
-        return loadResult -> {
-            if (loadResult == null) {
-                callback.noMatches();
-                return;
-            }
+    private void consumeCallback(final JSONObject loadResult, final AudioLoadResultHandler callback) {
+        if (loadResult == null) {
+            callback.noMatches();
+            return;
+        }
 
-            try {
-                final String loadType = loadResult.getString("loadType");
-                final TrackLoadResultHandler trackLoadResultHandler = new TrackLoadResultHandler(loadResult);
+        try {
+            final String loadType = loadResult.getString("loadType");
+            final TrackLoadResultHandler trackLoadResultHandler = new TrackLoadResultHandler(loadResult);
 
-                switch (loadType) {
-                    case "TRACK_LOADED":
-                        callback.trackLoaded(trackLoadResultHandler.handleTrackLoaded());
-                        break;
-                    case "PLAYLIST_LOADED":
-                        callback.playlistLoaded(trackLoadResultHandler.handlePlaylistLoaded(false));
-                        break;
-                    case "NO_MATCHES":
-                        callback.noMatches();
-                        break;
-                    case "LOAD_FAILED":
-                        callback.loadFailed(trackLoadResultHandler.handleLoadFailed());
-                        break;
-                    case "SEARCH_RESULT":
-                        callback.playlistLoaded(trackLoadResultHandler.handlePlaylistLoaded(true));
-                        break;
-                    default:
-                        throw new IllegalArgumentException("Invalid loadType: " + loadType);
-                }
-            } catch (final Exception exception) {
-                callback.loadFailed(new FriendlyException(exception.getMessage(), FriendlyException.Severity.FAULT, exception));
+            switch (loadType) {
+                case "TRACK_LOADED":
+                    callback.trackLoaded(trackLoadResultHandler.handleTrackLoaded());
+                    break;
+                case "PLAYLIST_LOADED":
+                    callback.playlistLoaded(trackLoadResultHandler.handlePlaylistLoaded(false));
+                    break;
+                case "NO_MATCHES":
+                    callback.noMatches();
+                    break;
+                case "LOAD_FAILED":
+                    callback.loadFailed(trackLoadResultHandler.handleLoadFailed());
+                    break;
+                case "SEARCH_RESULT":
+                    callback.playlistLoaded(trackLoadResultHandler.handlePlaylistLoaded(true));
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid loadType: " + loadType);
             }
-        };
+        } catch (final Exception exception) {
+            callback.loadFailed(new FriendlyException(exception.getMessage(), FriendlyException.Severity.FAULT, exception));
+        }
     }
 
     private CompletableFuture<JSONObject> load(final String identifier) {

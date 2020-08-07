@@ -19,11 +19,14 @@ import java.util.function.Function;
 public class JdaLavalink extends Lavalink<JdaLink> implements EventListener {
 
     private static final Logger log = LoggerFactory.getLogger(JdaLavalink.class);
-    private final Function<Integer, JDA> jdaProvider;
+
+    /** JDA provider may be set at a later time */
+    @Nullable
+    private Function<Integer, JDA> jdaProvider;
     private boolean autoReconnect = true;
     private final JDAVoiceInterceptor voiceInterceptor;
 
-    public JdaLavalink(String userId, int numShards, Function<Integer, JDA> jdaProvider) {
+    public JdaLavalink(String userId, int numShards, @Nullable Function<Integer, JDA> jdaProvider) {
         super(userId, numShards);
         this.jdaProvider = jdaProvider;
         this.voiceInterceptor = new JDAVoiceInterceptor(this);
@@ -33,8 +36,13 @@ public class JdaLavalink extends Lavalink<JdaLink> implements EventListener {
      * Creates a Lavalink instance.
      * N.B: You must set the user ID before adding a node
      */
-    public JdaLavalink(int numShards, Function<Integer, JDA> jdaProvider) {
+    public JdaLavalink(int numShards, @Nullable Function<Integer, JDA> jdaProvider) {
         this(null, numShards, jdaProvider);
+    }
+
+    @SuppressWarnings("unused")
+    public JdaLavalink(int numShards) {
+        this(numShards, null);
     }
 
     @SuppressWarnings("unused")
@@ -53,7 +61,7 @@ public class JdaLavalink extends Lavalink<JdaLink> implements EventListener {
         return getLink(guild.getId());
     }
 
-    @SuppressWarnings("WeakerAccess")
+    @SuppressWarnings({"WeakerAccess", "unused"})
     @Nullable
     public JdaLink getExistingLink(Guild guild) {
         return getExistingLink(guild.getId());
@@ -62,21 +70,30 @@ public class JdaLavalink extends Lavalink<JdaLink> implements EventListener {
     @SuppressWarnings({"WeakerAccess", "unused"})
     @NonNull
     public JDA getJda(int shardId) {
+        assert jdaProvider != null;
         return jdaProvider.apply(shardId);
     }
 
     @SuppressWarnings("WeakerAccess")
     @NonNull
     public JDA getJdaFromSnowflake(String snowflake) {
+        assert jdaProvider != null;
         return jdaProvider.apply(LavalinkUtil.getShardFromSnowflake(snowflake, numShards));
     }
 
+    @SuppressWarnings("unused")
+    public void setJdaProvider(@Nullable Function<Integer, JDA> jdaProvider) {
+        this.jdaProvider = jdaProvider;
+    }
+
+    @SuppressWarnings("unused")
+    @NonNull
     public JDAVoiceInterceptor getVoiceInterceptor() {
         return voiceInterceptor;
     }
 
     @Override
-    public void onEvent(GenericEvent event) {
+    public void onEvent(@NonNull GenericEvent event) {
         if (event instanceof ReconnectedEvent) {
             if (autoReconnect) {
                 getLinksMap().forEach((guildId, link) -> {

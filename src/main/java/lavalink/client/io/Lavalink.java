@@ -48,7 +48,7 @@ public abstract class Lavalink<T extends Link> {
     protected final int numShards;
     /** User id may be set at a later time */
     @Nullable
-    private String userId = null;
+    private String userId;
     private final ConcurrentHashMap<String, T> links = new ConcurrentHashMap<>();
     final List<LavalinkSocket> nodes = new CopyOnWriteArrayList<>();
     final LavalinkLoadBalancer loadBalancer = new LavalinkLoadBalancer(this);
@@ -71,6 +71,7 @@ public abstract class Lavalink<T extends Link> {
      * Creates a Lavalink instance.
      * N.B: You must set the user ID before adding a node
      */
+    @SuppressWarnings("unused")
     public Lavalink(int numShards) {
         this(null, numShards);
     }
@@ -146,7 +147,7 @@ public abstract class Lavalink<T extends Link> {
      */
     protected abstract T buildNewLink(String guildId);
 
-    @SuppressWarnings("WeakerAccess")
+    @SuppressWarnings({"WeakerAccess", "unused"})
     public int getNumShards() {
         return numShards;
     }
@@ -167,6 +168,7 @@ public abstract class Lavalink<T extends Link> {
      * The user id of this bot.
      * @throws IllegalStateException if any nodes are registered.
      */
+    @SuppressWarnings("unused")
     public void setUserId(@Nullable String userId) {
         if (!nodes.isEmpty()) {
             throw new IllegalStateException("Can't set userId if we already have nodes registered!");

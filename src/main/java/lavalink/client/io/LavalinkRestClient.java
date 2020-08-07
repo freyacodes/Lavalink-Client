@@ -47,38 +47,25 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
-import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
 public final class LavalinkRestClient {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(LavalinkRestClient.class);
+    private static final Logger log = LoggerFactory.getLogger(LavalinkRestClient.class);
 
     private static final String YOUTUBE_SEARCH_PREFIX = "ytsearch:";
     private static final String SOUNDCLOUD_SEARCH_PREFIX = "scsearch:";
 
-    private static final Function<JSONObject, List<AudioTrack>> SEARCH_TRANSFORMER = loadResult -> {
-        final List<AudioTrack> tracks = new ArrayList<>();
-        final JSONArray trackData = loadResult.getJSONArray("tracks");
-
-        for (final Object track : trackData) {
-            try {
-                final AudioTrack audioTrack = LavalinkUtil.toAudioTrack(((JSONObject) track).getString("track"));
-                tracks.add(audioTrack);
-            } catch (final IOException exception) {
-                LOGGER.error("Error converting track", exception);
-            }
-        }
-
-        return tracks;
-    };
-
     private final LavalinkSocket socket;
     private Consumer<HttpClientBuilder> builderConsumer;
 
-    public LavalinkRestClient(final LavalinkSocket socket) {
+    private final HttpClient httpClient = buildClient();
+
+    LavalinkRestClient(final LavalinkSocket socket) {
         this.socket = socket;
     }
 
@@ -97,7 +84,7 @@ public final class LavalinkRestClient {
     @NonNull
     public CompletableFuture<List<AudioTrack>> getYoutubeSearchResult(final String query) {
         return load(YOUTUBE_SEARCH_PREFIX + query)
-                .thenApplyAsync(SEARCH_TRANSFORMER);
+                .thenApplyAsync(LavalinkRestClient::transformSearchResult);
     }
 
     /**
@@ -111,7 +98,7 @@ public final class LavalinkRestClient {
     @NonNull
     public CompletableFuture<List<AudioTrack>> getSoundcloudSearchResult(final String query) {
         return load(SOUNDCLOUD_SEARCH_PREFIX + query)
-                .thenApplyAsync(SEARCH_TRANSFORMER);
+                .thenApplyAsync(LavalinkRestClient::transformSearchResult);
     }
 
     /**
@@ -119,8 +106,7 @@ public final class LavalinkRestClient {
      * {@code AudioLoadResultHandler callback} to handle them
      *
      * @param identifier the identifier for the track
-     * @param callback the result handler that will handle the result of the load
-     *
+     * @param callback   the result handler that will handle the result of the load
      * @see AudioPlayerManager#loadItem
      */
     @NonNull
@@ -168,17 +154,29 @@ public final class LavalinkRestClient {
     private CompletableFuture<JSONObject> load(final String identifier) {
         return CompletableFuture.supplyAsync(() -> {
             try {
-                final String requestURL = buildBaseAddress(socket) + URLEncoder.encode(identifier, "UTF-8");
+                final String requestURL = buildBaseAddress() + URLEncoder.encode(identifier, "UTF-8");
                 return apiGet(requestURL, socket.getPassword());
             } catch (final Throwable exception) {
-                LOGGER.error("Failed to load track with identifier $identifier", exception);
+                log.error("Failed to load track with identifier " + identifier, exception);
             }
 
             return null;
         });
     }
 
-    private String buildBaseAddress(final LavalinkSocket socket) {
+    private static List<AudioTrack> transformSearchResult(JSONObject loadResult) {
+        return loadResult.getJSONArray("tracks").toList().stream().map(track -> {
+            try {
+                return LavalinkUtil.toAudioTrack(new JSONObject((Map<?, ?>) track).getString("track"));
+            } catch (final IOException exception) {
+                log.error("Failed to convert search result $track to load result", exception);
+            }
+
+            return null;
+        }).collect(Collectors.toList());
+    }
+
+    private String buildBaseAddress() {
         return socket.getRemoteUri().toString()
                 .replaceFirst("ws://", "http://")
                 .replaceFirst("wss://", "https://")
@@ -197,7 +195,6 @@ public final class LavalinkRestClient {
         final HttpGet request = new HttpGet(url);
         request.addHeader(HttpHeaders.AUTHORIZATION, auth);
 
-        final HttpClient httpClient = buildClient();
         final HttpResponse httpResponse = httpClient.execute(request);
         final int statusCode = httpResponse.getStatusLine().getStatusCode();
         if (statusCode != 200) throw new IOException("Invalid API Request Status Code: " + statusCode);
@@ -236,36 +233,20 @@ public final class LavalinkRestClient {
                 tracks.add(audioTrack);
             }
 
-            if (isSearchResult) {
-                if (tracks.size() == 0) {
-                    throw new FriendlyException(
-                            "No search results found",
-                            FriendlyException.Severity.COMMON,
-                            new IllegalStateException("No results")
-                    );
-                }
+            if (tracks.size() == 0) {
+                throw new FriendlyException(
+                        isSearchResult ? "No search results found" : "Playlist is empty",
+                        FriendlyException.Severity.SUSPICIOUS,
+                        new IllegalStateException(isSearchResult ? "No results" : "Empty playlist")
+                );
+            }
 
+            if (isSearchResult) {
                 return new BasicAudioPlaylist("Search results for: ", tracks, tracks.get(0), true);
             }
 
             final JSONObject playlistInfo = loadResult.getJSONObject("playlistInfo");
-            final int selectedTrackID = playlistInfo.getInt("selectedTrack");
-            final AudioTrack selectedTrack;
-
-            if (selectedTrackID < tracks.size() && selectedTrackID >= 0) {
-                selectedTrack = tracks.get(selectedTrackID);
-            } else {
-                if (tracks.size() == 0) {
-                    throw new FriendlyException(
-                            "Playlist is empty",
-                            FriendlyException.Severity.SUSPICIOUS,
-                            new IllegalStateException("Empty playlist")
-                    );
-                }
-
-                selectedTrack = tracks.get(0);
-            }
-
+            final AudioTrack selectedTrack = tracks.get(0);
             final String playlistName = playlistInfo.getString("name");
 
             return new BasicAudioPlaylist(playlistName, tracks, selectedTrack, false);

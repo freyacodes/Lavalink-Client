@@ -78,10 +78,10 @@ public class JdaLavalink extends Lavalink<JdaLink> implements EventListener {
     @SuppressWarnings({"WeakerAccess", "unused"})
     @NonNull
     public JDA getJda(int shardId) {
-        if (jdaProvider == null) throw new IllegalStateException("JDA Provider not initialised!");
+        if (jdaProvider == null) throw new IllegalStateException("JDAProvider is not initialised!");
 
         JDA result = jdaProvider.apply(shardId);
-        if (result == null) throw new IllegalStateException("JDA Provider returned null when trying to get JDA instance!");
+        if (result == null) throw new IllegalStateException("JDAProvider returned null for shard " + shardId);
 
         return jdaProvider.apply(shardId);
     }

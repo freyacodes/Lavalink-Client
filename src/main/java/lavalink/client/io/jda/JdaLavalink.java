@@ -79,6 +79,10 @@ public class JdaLavalink extends Lavalink<JdaLink> implements EventListener {
     @NonNull
     public JDA getJda(int shardId) {
         if (jdaProvider == null) throw new IllegalStateException("JDA Provider not initialised!");
+
+        JDA result = jdaProvider.apply(shardId);
+        if (result == null) throw new IllegalStateException("JDA Provider returned null when trying to get JDA instance!");
+
         return jdaProvider.apply(shardId);
     }
 
@@ -93,8 +97,7 @@ public class JdaLavalink extends Lavalink<JdaLink> implements EventListener {
     @SuppressWarnings("WeakerAccess")
     @NonNull
     public JDA getJdaFromSnowflake(String snowflake) {
-        if (jdaProvider == null) throw new IllegalStateException("JDA Provider not initialised!");
-        return jdaProvider.apply(LavalinkUtil.getShardFromSnowflake(snowflake, numShards));
+        return getJda(LavalinkUtil.getShardFromSnowflake(snowflake, numShards));
     }
 
     @SuppressWarnings("unused")

@@ -34,11 +34,11 @@ import com.sedmelluq.discord.lavaplayer.tools.io.MessageInput;
 import com.sedmelluq.discord.lavaplayer.tools.io.MessageOutput;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import lavalink.client.player.LavalinkPlayer;
-import org.java_websocket.util.Base64;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Base64;
 
 public class LavalinkUtil {
 
@@ -81,7 +81,7 @@ public class LavalinkUtil {
      * @throws IOException if there is an IO problem
      */
     public static AudioTrack toAudioTrack(String message) throws IOException {
-        return toAudioTrack(Base64.decode(message));
+        return toAudioTrack(Base64.getDecoder().decode(message));
     }
 
     /**
@@ -101,7 +101,7 @@ public class LavalinkUtil {
      * @throws IOException if there is an IO problem
      */
     public static String toMessage(AudioTrack track) throws IOException {
-        return Base64.encodeBytes(toBinary(track));
+        return Base64.getEncoder().encodeToString(toBinary(track));
     }
 
     /**

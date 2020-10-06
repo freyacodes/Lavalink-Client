@@ -80,7 +80,7 @@ public abstract class ReusableWebSocket {
     }
 
     public boolean isConnecting() {
-        return socket != null && socket.isConnecting();
+        return socket != null && !socket.isOpen() && !socket.isClosed() && !socket.isClosing();
     }
 
     public boolean isClosed() {

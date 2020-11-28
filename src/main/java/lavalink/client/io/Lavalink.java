@@ -108,6 +108,7 @@ public abstract class Lavalink<T extends Link> {
         headers.put("Authorization", password);
         headers.put("Num-Shards", Integer.toString(numShards));
         headers.put("User-Id", userId);
+        headers.put("Client-Name", "Client-Name");
 
         LavalinkSocket socket = new LavalinkSocket(name, this, serverUri, new Draft_6455(), headers);
         socket.connect();

@@ -52,17 +52,17 @@ public class LavalinkSocket extends ReusableWebSocket {
     @NonNull
     private final String password;
     @NonNull
-    private final Lavalink lavalink;
+    private final Lavalink<?> lavalink;
     @Nullable
     private RemoteStats stats;
     long lastReconnectAttempt = 0;
     private int reconnectsAttempted = 0;
     @NonNull
     private final URI remoteUri;
-    private LavalinkRestClient restClient;
+    private final LavalinkRestClient restClient;
     private boolean available = false;
 
-    LavalinkSocket(@NonNull String name, @NonNull Lavalink lavalink, @NonNull URI serverUri, Draft protocolDraft, Map<String, String> headers) {
+    LavalinkSocket(@NonNull String name, @NonNull Lavalink<?> lavalink, @NonNull URI serverUri, Draft protocolDraft, Map<String, String> headers) {
         super(serverUri, protocolDraft, headers, TIMEOUT_MS);
         this.name = name;
         this.password = headers.get("Authorization");

@@ -272,12 +272,12 @@ public class LavalinkPlayer implements IPlayer {
             json.put("karaoke", obj);
         }
 
-        Trebolo trebolo = filters.getTrebolo();
-        if (trebolo != null) {
+        Tremolo tremolo = filters.getTremolo();
+        if (tremolo != null) {
             JSONObject obj = new JSONObject();
-            obj.put("frequency", trebolo.getFrequency());
-            obj.put("depth", trebolo.getDepth());
-            json.put("trebolo", obj);
+            obj.put("frequency", tremolo.getFrequency());
+            obj.put("depth", tremolo.getDepth());
+            json.put("tremolo", obj);
         }
 
         Vibrato vibrato = filters.getVibrato();

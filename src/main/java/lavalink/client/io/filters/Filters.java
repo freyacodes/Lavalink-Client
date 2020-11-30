@@ -20,7 +20,7 @@ public class Filters {
     private float[] bands = new float[BAND_COUNT];
     private Karaoke karaoke = null;
     private Timescale timescale = null;
-    private Trebolo trebolo = null;
+    private Tremolo tremolo = null;
     private Vibrato vibrato = null;
 
     /**
@@ -90,13 +90,13 @@ public class Filters {
     }
 
     @Nullable
-    public Trebolo getTrebolo() {
-        return trebolo;
+    public Tremolo getTremolo() {
+        return tremolo;
     }
 
     @CheckReturnValue
-    public Filters setTrebolo(Trebolo trebolo) {
-        this.trebolo = trebolo;
+    public Filters setTremolo(Tremolo tremolo) {
+        this.tremolo = tremolo;
         return this;
     }
 
@@ -120,7 +120,7 @@ public class Filters {
         bands = new float[BAND_COUNT];
         timescale = null;
         karaoke = null;
-        trebolo = null;
+        tremolo = null;
         vibrato = null;
         return this;
     }

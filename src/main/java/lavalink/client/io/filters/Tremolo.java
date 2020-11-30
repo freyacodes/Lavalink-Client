@@ -3,7 +3,7 @@ package lavalink.client.io.filters;
 import javax.annotation.CheckReturnValue;
 
 @SuppressWarnings("unused")
-public class Trebolo {
+public class Tremolo {
     private float frequency = 2.0f;
     private float depth = 0.5f;
 
@@ -12,7 +12,7 @@ public class Trebolo {
     }
 
     @CheckReturnValue
-    public Trebolo setFrequency(float frequency) {
+    public Tremolo setFrequency(float frequency) {
         if (frequency <= 0) throw new IllegalArgumentException("Frequency must be >0");
         this.frequency = frequency;
         return this;
@@ -23,7 +23,7 @@ public class Trebolo {
     }
 
     @CheckReturnValue
-    public Trebolo setDepth(float depth) {
+    public Tremolo setDepth(float depth) {
         if (depth <= 0 || depth >= 1) throw new IllegalArgumentException("Frequency must be >0 and <=1");
         this.depth = depth;
         return this;

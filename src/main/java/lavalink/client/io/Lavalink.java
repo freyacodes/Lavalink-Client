@@ -49,6 +49,8 @@ public abstract class Lavalink<T extends Link> {
     /** User id may be set at a later time */
     @Nullable
     private String userId;
+    @NonNull
+    private String clientName = "Client-Name";
     private final ConcurrentHashMap<String, T> links = new ConcurrentHashMap<>();
     final List<LavalinkSocket> nodes = new CopyOnWriteArrayList<>();
     final LavalinkLoadBalancer loadBalancer = new LavalinkLoadBalancer(this);
@@ -108,7 +110,7 @@ public abstract class Lavalink<T extends Link> {
         headers.put("Authorization", password);
         headers.put("Num-Shards", Integer.toString(numShards));
         headers.put("User-Id", userId);
-        headers.put("Client-Name", "Client-Name");
+        headers.put("Client-Name", clientName);
 
         LavalinkSocket socket = new LavalinkSocket(name, this, serverUri, new Draft_6455(), headers);
         socket.connect();
@@ -175,6 +177,18 @@ public abstract class Lavalink<T extends Link> {
             throw new IllegalStateException("Can't set userId if we already have nodes registered!");
         }
         this.userId = userId;
+    }
+
+    /**
+     * Sets the client name for your bot to use
+     * @throws IllegalStateException if any nodes are registered.
+     */
+    @SuppressWarnings("unused")
+    public void setClientName(@NonNull String clientName) {
+        if (!nodes.isEmpty()) {
+            throw new IllegalStateException("Can't set clientName if we already have nodes registered!");
+        }
+        this.clientName = clientName;
     }
 
     public void shutdown() {

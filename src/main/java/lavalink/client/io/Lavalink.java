@@ -50,7 +50,7 @@ public abstract class Lavalink<T extends Link> {
     @Nullable
     private String userId;
     @NonNull
-    private String clientName = "Client-Name";
+    private String clientName = "Lavalink-Client";
     private final ConcurrentHashMap<String, T> links = new ConcurrentHashMap<>();
     final List<LavalinkSocket> nodes = new CopyOnWriteArrayList<>();
     final LavalinkLoadBalancer loadBalancer = new LavalinkLoadBalancer(this);

@@ -183,7 +183,7 @@ public abstract class Lavalink<T extends Link> {
     }
 
     void removeDestroyedLink(Link link) {
-        log.info("Destroyed link for guild " + link.getGuildId());
+        log.debug("Destroyed link for guild " + link.getGuildId());
         links.remove(link.getGuildId());
     }
 

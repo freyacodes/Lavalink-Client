@@ -45,6 +45,7 @@ public class LavalinkPlayer implements IPlayer {
     private long position = -1;
     /** Lazily initialized */
     private Filters filters = null;
+    private boolean connected = false;
 
     private final Link link;
     private List<IPlayerEventListener> listeners = new CopyOnWriteArrayList<>();
@@ -204,6 +205,7 @@ public class LavalinkPlayer implements IPlayer {
     public void provideState(JSONObject json) {
         updateTime = json.getLong("time");
         position = json.optLong("position", 0);
+        connected = json.optBoolean("connected", true);
     }
 
     @Override
@@ -291,4 +293,10 @@ public class LavalinkPlayer implements IPlayer {
         node.send(json.toString());
     }
 
+    /**
+     * @return Whether or not the Lavalink player is connected to the gateway
+     */
+    public boolean isConnected() {
+        return connected;
+    }
 }

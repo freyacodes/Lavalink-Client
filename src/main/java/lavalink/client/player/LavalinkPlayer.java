@@ -290,6 +290,27 @@ public class LavalinkPlayer implements IPlayer {
             json.put("vibrato", obj);
         }
 
+        Rotation rotation = filters.getRotation();
+        if (rotation != null) {
+            JSONObject obj = new JSONObject();
+            obj.put("rotationHz", rotation.getFrequency());
+            json.put("rotation", obj);
+        }
+
+        Distortion disortion = filters.getDisortion();
+        if (disortion != null) {
+            JSONObject obj = new JSONObject();
+            obj.put("sinOffset", disortion.getSinOffset());
+            obj.put("sinScale", disortion.getSinScale());
+            obj.put("cosOffset", disortion.getCosOffset());
+            obj.put("cosScale", disortion.getCosScale());
+            obj.put("tanOffset", disortion.getTanOffset());
+            obj.put("tanScale", disortion.getTanScale());
+            obj.put("offset", disortion.getOffset());
+            obj.put("offset", disortion.getOffset());
+            json.put("disortion", obj);
+        }
+
         node.send(json.toString());
     }
 

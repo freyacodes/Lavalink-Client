@@ -23,7 +23,7 @@ public class Filters {
     private Tremolo tremolo = null;
     private Vibrato vibrato = null;
     private Rotation rotation = null;
-    private Distortion disortion = null;
+    private Distortion distortion = null;
 
     /**
      * Intended for internal use only
@@ -125,13 +125,13 @@ public class Filters {
     }
 
     @Nullable
-    public Distortion getDisortion() {
-        return disortion;
+    public Distortion getDistortion() {
+        return distortion;
     }
 
     @CheckReturnValue
-    public Filters setDisortion(Distortion disortion) {
-        this.disortion = disortion;
+    public Filters setDistortion(Distortion distortion) {
+        this.distortion = distortion;
         return this;
     }
 
@@ -147,7 +147,7 @@ public class Filters {
         tremolo = null;
         vibrato = null;
         rotation = null;
-        disortion = null;
+        distortion = null;
         return this;
     }
 

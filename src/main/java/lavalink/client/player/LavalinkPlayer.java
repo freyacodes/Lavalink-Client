@@ -297,18 +297,18 @@ public class LavalinkPlayer implements IPlayer {
             json.put("rotation", obj);
         }
 
-        Distortion disortion = filters.getDisortion();
-        if (disortion != null) {
+        Distortion distortion = filters.getDistortion();
+        if (distortion != null) {
             JSONObject obj = new JSONObject();
-            obj.put("sinOffset", disortion.getSinOffset());
-            obj.put("sinScale", disortion.getSinScale());
-            obj.put("cosOffset", disortion.getCosOffset());
-            obj.put("cosScale", disortion.getCosScale());
-            obj.put("tanOffset", disortion.getTanOffset());
-            obj.put("tanScale", disortion.getTanScale());
-            obj.put("offset", disortion.getOffset());
-            obj.put("offset", disortion.getOffset());
-            json.put("disortion", obj);
+            obj.put("sinOffset", distortion.getSinOffset());
+            obj.put("sinScale", distortion.getSinScale());
+            obj.put("cosOffset", distortion.getCosOffset());
+            obj.put("cosScale", distortion.getCosScale());
+            obj.put("tanOffset", distortion.getTanOffset());
+            obj.put("tanScale", distortion.getTanScale());
+            obj.put("offset", distortion.getOffset());
+            obj.put("offset", distortion.getOffset());
+            json.put("distortion", obj);
         }
 
         node.send(json.toString());

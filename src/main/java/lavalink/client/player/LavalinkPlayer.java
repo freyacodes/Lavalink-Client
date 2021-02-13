@@ -307,7 +307,7 @@ public class LavalinkPlayer implements IPlayer {
             obj.put("tanOffset", distortion.getTanOffset());
             obj.put("tanScale", distortion.getTanScale());
             obj.put("offset", distortion.getOffset());
-            obj.put("offset", distortion.getOffset());
+            obj.put("scale", distortion.getScale());
             json.put("distortion", obj);
         }
 

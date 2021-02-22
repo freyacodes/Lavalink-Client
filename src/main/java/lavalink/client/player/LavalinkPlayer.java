@@ -41,6 +41,7 @@ public class LavalinkPlayer implements IPlayer {
 
     private AudioTrack track = null;
     private boolean paused = false;
+    private int volume = 100;
     private long updateTime = -1;
     private long position = -1;
     /** Lazily initialized */
@@ -95,6 +96,7 @@ public class LavalinkPlayer implements IPlayer {
                 json.put("endTime", trackData.endPos);
             }
             json.put("pause", paused);
+            json.put("volume", volume);
             //noinspection ConstantConditions
             link.getNode(true).send(json.toString());
 
@@ -176,16 +178,20 @@ public class LavalinkPlayer implements IPlayer {
      */
     @Override
     public void setVolume(int volume) {
-        if (filters == null && volume == 100) return;
-        getFilters().setVolume(volume / 100f).commit();
+        volume = Math.min(1000, Math.max(0, volume)); // Lavaplayer bounds
+        this.volume = volume;
+
+        LavalinkSocket node = link.getNode(false);
+        if (node == null) return;
+
+        JSONObject json = new JSONObject();
+        json.put("op", "volume");
+        json.put("guildId", link.getGuildId());
+        json.put("volume", volume);
+        node.send(json.toString());
     }
 
-    /**
-     * @deprecated Please use the new filters system get specify volume
-     * @see LavalinkPlayer#getFilters()
-     */
     @Override
-    @Deprecated
     public int getVolume() {
         return (int) (getFilters().getVolume() * 100);
     }

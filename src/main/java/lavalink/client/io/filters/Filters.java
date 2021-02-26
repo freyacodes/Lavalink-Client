@@ -22,6 +22,8 @@ public class Filters {
     private Timescale timescale = null;
     private Tremolo tremolo = null;
     private Vibrato vibrato = null;
+    private Rotation rotation = null;
+    private Distortion distortion = null;
 
     /**
      * Intended for internal use only
@@ -111,6 +113,28 @@ public class Filters {
         return this;
     }
 
+    @Nullable
+    public Rotation getRotation() {
+        return rotation;
+    }
+
+    @CheckReturnValue
+    public Filters setRotation(Rotation rotation) {
+        this.rotation = rotation;
+        return this;
+    }
+
+    @Nullable
+    public Distortion getDistortion() {
+        return distortion;
+    }
+
+    @CheckReturnValue
+    public Filters setDistortion(Distortion distortion) {
+        this.distortion = distortion;
+        return this;
+    }
+
     /**
      * Resets this player's filters.
      */
@@ -122,6 +146,8 @@ public class Filters {
         karaoke = null;
         tremolo = null;
         vibrato = null;
+        rotation = null;
+        distortion = null;
         return this;
     }
 

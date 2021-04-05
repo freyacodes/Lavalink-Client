@@ -245,7 +245,7 @@ public final class LavalinkRestClient {
             }
 
             final JSONObject playlistInfo = loadResult.getJSONObject("playlistInfo");
-            final AudioTrack selectedTrack = playlistInfo.isNull("selectedTrack") ? null : tracks.get(playlistInfo.getInt("selectedTrack"));
+            final AudioTrack selectedTrack = playlistInfo.isNull("selectedTrack") || playlistInfo.getInt("selectedTrack") == -1? null : tracks.get(playlistInfo.getInt("selectedTrack"));
             final String playlistName = playlistInfo.getString("name");
 
             return new BasicAudioPlaylist(playlistName, tracks, selectedTrack, false);

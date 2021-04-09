@@ -1,4 +1,4 @@
-# Lavalink Client [![Release](https://img.shields.io/github/tag/FredBoat/Lavalink-Client.svg)](https://jitpack.io/#FredBoat/Lavalink-Client)
+# Lavalink Client [![Release](https://img.shields.io/github/tag/freyacodes/Lavalink-Client.svg)](https://jitpack.io/#freyacodes/Lavalink-Client)
 
 ## Installation
 Lavalink does not have a maven repository and instead uses Jitpack.
@@ -6,7 +6,7 @@ You can add the following to your POM if you're using Maven:
 ```xml
 <dependencies>
     <dependency>
-        <groupId>com.github.FredBoat</groupId>
+        <groupId>com.github.freyacodes</groupId>
         <artifactId>Lavalink-Client</artifactId>
         <version>x.y.z</version>
     </dependency>
@@ -30,7 +30,7 @@ Or Gradle:
     }
 
     dependencies {
-        compile group: 'com.github.FredBoat', name: 'Lavalink-Client', version: 'x.y.z'
+        compile group: 'com.github.freyacodes', name: 'Lavalink-Client', version: 'x.y.z'
     }
 ```
 

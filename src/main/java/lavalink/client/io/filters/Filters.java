@@ -24,6 +24,7 @@ public class Filters {
     private Vibrato vibrato = null;
     private Rotation rotation = null;
     private Distortion distortion = null;
+    private ChannelMix channelMix = null;
 
     /**
      * Intended for internal use only
@@ -135,6 +136,17 @@ public class Filters {
         return this;
     }
 
+    @Nullable
+    public ChannelMix getChannelMix() {
+        return channelMix;
+    }
+
+    @CheckReturnValue
+    public Filters setChannelMix(ChannelMix channelMix) {
+        this.channelMix = channelMix;
+        return this;
+    }
+
     /**
      * Resets this player's filters.
      */
@@ -148,6 +160,7 @@ public class Filters {
         vibrato = null;
         rotation = null;
         distortion = null;
+        channelMix = null;
         return this;
     }
 

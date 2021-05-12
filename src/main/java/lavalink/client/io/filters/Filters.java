@@ -25,6 +25,7 @@ public class Filters {
     private Rotation rotation = null;
     private Distortion distortion = null;
     private ChannelMix channelMix = null;
+    private LowPass lowPass = null;
 
     /**
      * Intended for internal use only
@@ -147,6 +148,17 @@ public class Filters {
         return this;
     }
 
+    @Nullable
+    public LowPass getLowPass() {
+        return lowPass;
+    }
+
+    @CheckReturnValue
+    public Filters setLowPass(LowPass lowPass) {
+        this.lowPass = lowPass;
+        return this;
+    }
+
     /**
      * Resets this player's filters.
      */
@@ -161,6 +173,7 @@ public class Filters {
         rotation = null;
         distortion = null;
         channelMix = null;
+        lowPass = null;
         return this;
     }
 

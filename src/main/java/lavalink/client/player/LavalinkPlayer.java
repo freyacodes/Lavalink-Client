@@ -327,6 +327,13 @@ public class LavalinkPlayer implements IPlayer {
             json.put("channelMix", obj);
         }
 
+        LowPass lowPass = filters.getLowPass();
+        if (lowPass != null) {
+            JSONObject obj = new JSONObject();
+            obj.put("smoothing", lowPass.getSmoothing());
+            json.put("lowPass", obj);
+        }
+
         node.send(json.toString());
     }
 

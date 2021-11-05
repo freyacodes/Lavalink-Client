@@ -170,6 +170,8 @@ public class LavalinkPlayer implements IPlayer {
         json.put("position", position);
         //noinspection ConstantConditions
         link.getNode(true).send(json.toString());
+        
+        this.position = position;
     }
 
     /**

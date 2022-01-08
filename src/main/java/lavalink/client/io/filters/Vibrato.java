@@ -13,7 +13,7 @@ public class Vibrato {
 
     @CheckReturnValue
     public Vibrato setFrequency(float frequency) {
-        if (frequency <= 0 || frequency >= 14) throw new IllegalArgumentException("Frequency must be >0 and <=14");
+        if (frequency <= 0 || frequency > 14) throw new IllegalArgumentException("Frequency must be >0 and <=14");
         this.frequency = frequency;
         return this;
     }

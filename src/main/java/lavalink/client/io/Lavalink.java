@@ -78,16 +78,16 @@ public abstract class Lavalink<T extends Link> {
 
     private static final AtomicInteger nodeCounter = new AtomicInteger(0);
 
-    public void addNode(@NonNull URI serverUri, @NonNull String password) {
-        addNode(serverUri, password, null);
+    public LavalinkSocket addNode(@NonNull URI serverUri, @NonNull String password) {
+        return addNode(serverUri, password, null);
     }
 
-    public void addNode(@NonNull URI serverUri, @NonNull String password, @Nullable String resumeKey) {
-        addNode("Lavalink_Node_#" + nodeCounter.getAndIncrement(), serverUri, password, resumeKey);
+    public LavalinkSocket addNode(@NonNull URI serverUri, @NonNull String password, @Nullable String resumeKey) {
+        return addNode("Lavalink_Node_#" + nodeCounter.getAndIncrement(), serverUri, password, resumeKey);
     }
 
-    public void addNode(@NonNull String name, @NonNull URI serverUri, @NonNull String password) {
-        addNode(name, serverUri, password, null);
+    public LavalinkSocket addNode(@NonNull String name, @NonNull URI serverUri, @NonNull String password) {
+        return addNode(name, serverUri, password, null);
     }
 
     /**
@@ -105,7 +105,7 @@ public abstract class Lavalink<T extends Link> {
      * @see #setUserId(String)
      */
     @SuppressWarnings("WeakerAccess")
-    public void addNode(@NonNull String name, @NonNull URI serverUri, @NonNull String password, @Nullable String resumeKey) {
+    public LavalinkSocket addNode(@NonNull String name, @NonNull URI serverUri, @NonNull String password, @Nullable String resumeKey) {
         if (userId == null) {
             throw new IllegalStateException("We need a userId to connect to Lavalink");
         }
@@ -126,6 +126,7 @@ public abstract class Lavalink<T extends Link> {
         LavalinkSocket socket = new LavalinkSocket(name, this, serverUri, new Draft_6455(), headers);
         socket.connect();
         nodes.add(socket);
+        return socket;
     }
 
     @SuppressWarnings("unused")

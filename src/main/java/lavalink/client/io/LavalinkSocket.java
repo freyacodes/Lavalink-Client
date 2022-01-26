@@ -209,6 +209,22 @@ public class LavalinkSocket extends ReusableWebSocket {
         }
     }
 
+    public void configureResuming(String resumeKey) {
+        configureResuming(resumeKey, -1);
+    }
+
+    public void configureResuming(String resumeKey, long timeout) {
+        JSONObject json = new JSONObject()
+                .put("op", "configureResuming")
+                .put("key", resumeKey);
+        if (timeout > 0) {
+            json.put("timeout", timeout);
+        }
+        send(json.toString());
+    }
+
+
+
     @NonNull
     @SuppressWarnings("unused")
     public URI getRemoteUri() {

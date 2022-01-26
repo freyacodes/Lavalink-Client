@@ -79,7 +79,15 @@ public abstract class Lavalink<T extends Link> {
     private static final AtomicInteger nodeCounter = new AtomicInteger(0);
 
     public void addNode(@NonNull URI serverUri, @NonNull String password) {
-        addNode("Lavalink_Node_#" + nodeCounter.getAndIncrement(), serverUri, password);
+        addNode(serverUri, password, null);
+    }
+
+    public void addNode(@NonNull URI serverUri, @NonNull String password, @Nullable String resumeKey) {
+        addNode("Lavalink_Node_#" + nodeCounter.getAndIncrement(), serverUri, password, resumeKey);
+    }
+
+    public void addNode(@NonNull String name, @NonNull URI serverUri, @NonNull String password) {
+        addNode(name, serverUri, password, null);
     }
 
     /**
@@ -90,12 +98,14 @@ public abstract class Lavalink<T extends Link> {
      *         uri of the node to be added
      * @param password
      *         password of the node to be added
+     * @param resumeKey
+     *        resume key of the node to be added
      * @throws IllegalStateException if no userId has been set.
      * @throws IllegalArgumentException if a node with that name already exists.
      * @see #setUserId(String)
      */
     @SuppressWarnings("WeakerAccess")
-    public void addNode(@NonNull String name, @NonNull URI serverUri, @NonNull String password) {
+    public void addNode(@NonNull String name, @NonNull URI serverUri, @NonNull String password, @Nullable String resumeKey) {
         if (userId == null) {
             throw new IllegalStateException("We need a userId to connect to Lavalink");
         }
@@ -109,6 +119,9 @@ public abstract class Lavalink<T extends Link> {
         headers.put("Num-Shards", Integer.toString(numShards));
         headers.put("User-Id", userId);
         headers.put("Client-Name", "Lavalink-Client");
+        if (resumeKey != null) {
+            headers.put("Resume-Key", resumeKey);
+        }
 
         LavalinkSocket socket = new LavalinkSocket(name, this, serverUri, new Draft_6455(), headers);
         socket.connect();

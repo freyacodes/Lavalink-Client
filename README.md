@@ -30,7 +30,19 @@ Or Gradle:
     }
 
     dependencies {
-        compile group: 'com.github.FredBoat', name: 'Lavalink-Client', version: 'x.y.z'
+        implementation "com.github.FredBoat:Lavalink-Client:x.y.z"
+    }
+```
+
+Or Gradle DSL:
+
+```kotlin
+    repositories {
+         maven { url = uri("https://jitpack.io") }
+    }
+    
+    dependencies {
+         implementation("com.github.FredBoat:Lavalink-Client:x.y.z")
     }
 ```
 

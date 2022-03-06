@@ -22,7 +22,7 @@ You can add the following to your POM if you're using Maven:
 </repositories>
 ```
 
-Or Gradle:
+Or with Gradle (Groovy DSL):
 
 ```groovy
     repositories {
@@ -34,7 +34,7 @@ Or Gradle:
     }
 ```
 
-Or Gradle DSL:
+Or Gradle with Kotlin DSL:
 
 ```kotlin
     repositories {

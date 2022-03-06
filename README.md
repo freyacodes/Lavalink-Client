@@ -22,7 +22,7 @@ You can add the following to your POM if you're using Maven:
 </repositories>
 ```
 
-Or Gradle:
+Or with Gradle (Groovy DSL):
 
 ```groovy
     repositories {
@@ -30,7 +30,19 @@ Or Gradle:
     }
 
     dependencies {
-        compile group: 'com.github.FredBoat', name: 'Lavalink-Client', version: 'x.y.z'
+        implementation "com.github.FredBoat:Lavalink-Client:x.y.z"
+    }
+```
+
+Or Gradle with Kotlin DSL:
+
+```kotlin
+    repositories {
+         maven { url = uri("https://jitpack.io") }
+    }
+    
+    dependencies {
+         implementation("com.github.FredBoat:Lavalink-Client:x.y.z")
     }
 ```
 

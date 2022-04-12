@@ -26,14 +26,11 @@ import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
-import lavalink.client.io.Lavalink;
-import lavalink.client.io.LavalinkSocket;
 import lavalink.client.io.Link;
 import lavalink.client.io.jda.JdaLavalink;
 import lavalink.client.io.jda.JdaLink;
 import lavalink.client.player.IPlayer;
 import lavalink.client.player.event.PlayerEventListenerAdapter;
-import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.VoiceChannel;
@@ -83,8 +80,7 @@ class LavalinkTest {
 
     @BeforeAll
     static void setUp() throws Exception {
-        JDABuilder jdaBuilder = new JDABuilder(AccountType.BOT)
-                .setToken(getSystemProperty(PROPERTY_TOKEN));
+        JDABuilder jdaBuilder = JDABuilder.createDefault(getSystemProperty(PROPERTY_TOKEN));
 
         JDA selfId = jdaBuilder.build();
         lavalink = new JdaLavalink(selfId.retrieveApplicationInfo().submit().get(30, TimeUnit.SECONDS).getId(), 1, integer -> jda);

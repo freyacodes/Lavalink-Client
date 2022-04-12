@@ -29,26 +29,27 @@ version = "${versionFromTag()}"
 description = 'JDA based client for the Lavalink-Server'
 
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
 
 
 repositories {
     jcenter()
     mavenCentral()
+    maven { url 'https://m2.dv8tion.net/releases' } // for lavaplayer
     maven { url 'https://jitpack.io' }
 }
 
 
 ext {
     //@formatter:off
-    gradleVersion               = '4.9'
+    gradleVersion               = '7.4.2'
 
-    lavaplayerVersion           = '1.3.71'
+    lavaplayerVersion           = '1.3.78'
     javaWebSocketVersion        = '1.5.1'
     slf4jVersion                = '1.7.25'
     jsonOrgVersion              = '20180130'
-    jdaVersion                  = '4.1.1_135'
+    jdaVersion                  = '5.0.0-alpha.9'
     spotbugsAnnotationsVersion  = '3.1.3'
     prometheusVersion           = '0.4.0'
 
@@ -62,20 +63,20 @@ ext {
 
 
 dependencies {
-    compile group: 'com.sedmelluq', name: 'lavaplayer', version: lavaplayerVersion
-    compile group: 'org.java-websocket', name: 'Java-WebSocket', version: javaWebSocketVersion
-    compile group: 'org.slf4j', name: 'slf4j-api', version: slf4jVersion
-    compile group: 'org.json', name: 'json', version: jsonOrgVersion
+    implementation group: 'com.sedmelluq', name: 'lavaplayer', version: lavaplayerVersion
+    implementation group: 'org.java-websocket', name: 'Java-WebSocket', version: javaWebSocketVersion
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: slf4jVersion
+    implementation group: 'org.json', name: 'json', version: jsonOrgVersion
     compileOnly group: 'net.dv8tion', name: 'JDA', version: jdaVersion
-    testCompile group: 'net.dv8tion', name: 'JDA', version: jdaVersion
+    testImplementation group: 'net.dv8tion', name: 'JDA', version: jdaVersion
     compileOnly group: 'com.github.spotbugs', name: 'spotbugs-annotations', version: spotbugsAnnotationsVersion
     compileOnly group: 'io.prometheus', name: 'simpleclient', version: prometheusVersion
-    testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: junitJupiterVersion
-    testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: junitJupiterVersion
-    testCompile group: 'org.junit.platform', name: 'junit-platform-launcher', version: junitPlatformVersion
-    testCompile group: 'org.junit.platform', name: 'junit-platform-runner', version: junitPlatformVersion
-    testCompile group: 'ch.qos.logback', name: 'logback-classic', version: logbackVersion
-    testCompile group: 'com.mashape.unirest', name: 'unirest-java', version: unirestVersion
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: junitJupiterVersion
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: junitJupiterVersion
+    testImplementation group: 'org.junit.platform', name: 'junit-platform-launcher', version: junitPlatformVersion
+    testImplementation group: 'org.junit.platform', name: 'junit-platform-runner', version: junitPlatformVersion
+    testImplementation group: 'ch.qos.logback', name: 'logback-classic', version: logbackVersion
+    testImplementation group: 'com.mashape.unirest', name: 'unirest-java', version: unirestVersion
 }
 
 

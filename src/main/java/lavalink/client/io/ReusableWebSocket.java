@@ -43,6 +43,7 @@ public abstract class ReusableWebSocket {
     private final int connectTimeout;
     private final ReusableWebSocket instance = this; // For use in inner class
     private boolean isUsed = false;
+    private int heartbeatTimeout = 60;
 
     public ReusableWebSocket(URI serverUri, Draft draft, Map<String, String> headers, int connectTimeout) {
         this.serverUri = serverUri;
@@ -79,7 +80,7 @@ public abstract class ReusableWebSocket {
     }
 
     public boolean isConnecting() {
-        return socket != null && socket.isConnecting();
+        return socket != null && !socket.isOpen() && !socket.isClosed() && !socket.isClosing();
     }
 
     public boolean isClosed() {
@@ -92,12 +93,14 @@ public abstract class ReusableWebSocket {
 
     public void connect() {
         if (socket == null || isUsed) socket = new DisposableSocket(serverUri, draft, headers, connectTimeout);
+        socket.setConnectionLostTimeout(heartbeatTimeout);
         socket.connect();
         isUsed = true;
     }
 
     public void connectBlocking() throws InterruptedException {
         if (socket == null || isUsed) socket = new DisposableSocket(serverUri, draft, headers, connectTimeout);
+        socket.setConnectionLostTimeout(heartbeatTimeout);
         socket.connectBlocking();
         isUsed = true;
     }
@@ -115,6 +118,11 @@ public abstract class ReusableWebSocket {
     public void close(int code, String reason) {
         if (socket != null)
             socket.close(code, reason);
+    }
+
+    public void setHeartbeatTimeout(int seconds) {
+        heartbeatTimeout = seconds;
+        socket.setConnectionLostTimeout(seconds);
     }
 
     private class DisposableSocket extends WebSocketClient {

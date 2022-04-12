@@ -38,7 +38,7 @@ abstract public class Link {
     private static final Logger log = LoggerFactory.getLogger(Link.class);
     private JSONObject lastVoiceServerUpdate = null;
     private String lastSessionId = null;
-    private final Lavalink lavalink;
+    private final Lavalink<?> lavalink;
     protected final long guild;
     private LavalinkPlayer player;
     private volatile String channel = null;
@@ -46,7 +46,7 @@ abstract public class Link {
     /* May only be set by setState() */
     private volatile State state = State.NOT_CONNECTED;
 
-    protected Link(Lavalink lavalink, String guildId) {
+    protected Link(Lavalink<?> lavalink, String guildId) {
         this.lavalink = lavalink;
         this.guild = Long.parseLong(guildId);
     }
@@ -59,8 +59,15 @@ abstract public class Link {
         return player;
     }
 
-    public Lavalink getLavalink() {
+    public Lavalink<?> getLavalink() {
         return lavalink;
+    }
+
+    public LavalinkRestClient getRestClient() {
+        final LavalinkSocket node = getNode(true);
+        if (node == null) throw new IllegalStateException("No available nodes!");
+
+        return node.getRestClient();
     }
 
     @SuppressWarnings("unused")
@@ -76,6 +83,11 @@ abstract public class Link {
         return guild;
     }
 
+    /**
+     * @deprecated may cause unexpected reconnects and other strange behavior. Use {@link #destroy()} instead.
+     * Will be removed if we change the lifecycle of this class.
+     */
+    @Deprecated
     public void disconnect() {
         setState(State.DISCONNECTING);
         queueAudioDisconnect();
@@ -241,6 +253,7 @@ abstract public class Link {
      * @param reason the reason for closure, provided by the closing peer.
      * @param byRemote true if closed by Discord, false if closed by the Lavalink server.
      */
+    @SuppressWarnings("unused")
     public void onVoiceWebSocketClosed(int code, String reason, boolean byRemote) {}
 
     public enum State {

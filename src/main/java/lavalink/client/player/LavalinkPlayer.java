@@ -26,12 +26,13 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import lavalink.client.LavalinkUtil;
 import lavalink.client.io.LavalinkSocket;
 import lavalink.client.io.Link;
-import lavalink.client.player.event.IPlayerEventListener;
-import lavalink.client.player.event.PlayerEvent;
-import lavalink.client.player.event.PlayerPauseEvent;
-import lavalink.client.player.event.PlayerResumeEvent;
+import lavalink.client.io.filters.*;
+import lavalink.client.player.event.*;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -43,6 +44,9 @@ public class LavalinkPlayer implements IPlayer {
     private int volume = 100;
     private long updateTime = -1;
     private long position = -1;
+    /** Lazily initialized */
+    private Filters filters = null;
+    private boolean connected = false;
 
     private final Link link;
     private List<IPlayerEventListener> listeners = new CopyOnWriteArrayList<>();
@@ -165,8 +169,14 @@ public class LavalinkPlayer implements IPlayer {
         json.put("position", position);
         //noinspection ConstantConditions
         link.getNode(true).send(json.toString());
+        
+        this.position = position;
     }
 
+    /**
+     * @deprecated Please use the new filters system to specify volume
+     * @see LavalinkPlayer#getFilters()
+     */
     @Override
     public void setVolume(int volume) {
         volume = Math.min(1000, Math.max(0, volume)); // Lavaplayer bounds
@@ -184,12 +194,25 @@ public class LavalinkPlayer implements IPlayer {
 
     @Override
     public int getVolume() {
-        return volume;
+        return (int) (getFilters().getVolume() * 100);
+    }
+
+    /**
+     * @return a builder that allows setting filters such as volume, an equalizer, etc.
+     * @see Filters#commit()
+     */
+    @SuppressWarnings({"WeakerAccess", "unused"})
+    @Nonnull
+    @CheckReturnValue
+    public Filters getFilters() {
+        if (filters == null) filters = new Filters(this, this::onCommit);
+        return filters;
     }
 
     public void provideState(JSONObject json) {
         updateTime = json.getLong("time");
         position = json.optLong("position", 0);
+        connected = json.optBoolean("connected", true);
     }
 
     @Override
@@ -210,9 +233,115 @@ public class LavalinkPlayer implements IPlayer {
         track = null;
     }
 
-    @SuppressWarnings("WeakerAccess")
+    @SuppressWarnings({"unused"})
     public Link getLink() {
         return link;
     }
 
+    private void onCommit() {
+        LavalinkSocket node = link.getNode(false);
+        if (node == null) return;
+
+        JSONObject json = new JSONObject();
+        json.put("op", "filters");
+        json.put("guildId", link.getGuildId());
+
+        // Volume
+        json.put("volume", filters.getVolume());
+
+        // Equalizer
+        JSONArray bands = new JSONArray();
+        int i = -1;
+        for (float f : filters.getBands()) {
+            i++;
+            if (f == 0.0f) continue;
+            JSONObject obj = new JSONObject();
+            obj.put("band", i);
+            obj.put("gain", f);
+            bands.put(obj);
+        }
+        if (bands.length() > 0) json.put("equalizer", bands);
+
+        Timescale timescale = filters.getTimescale();
+        if (timescale != null) {
+            JSONObject obj = new JSONObject();
+            obj.put("speed", timescale.getSpeed());
+            obj.put("pitch", timescale.getPitch());
+            obj.put("rate", timescale.getRate());
+            json.put("timescale", obj);
+        }
+
+        Karaoke karaoke = filters.getKaraoke();
+        if (karaoke != null) {
+            JSONObject obj = new JSONObject();
+            obj.put("level", karaoke.getLevel());
+            obj.put("monoLevel", karaoke.getMonoLevel());
+            obj.put("filterBand", karaoke.getFilterBand());
+            obj.put("filterWidth", karaoke.getFilterWidth());
+            json.put("karaoke", obj);
+        }
+
+        Tremolo tremolo = filters.getTremolo();
+        if (tremolo != null) {
+            JSONObject obj = new JSONObject();
+            obj.put("frequency", tremolo.getFrequency());
+            obj.put("depth", tremolo.getDepth());
+            json.put("tremolo", obj);
+        }
+
+        Vibrato vibrato = filters.getVibrato();
+        if (vibrato != null) {
+            JSONObject obj = new JSONObject();
+            obj.put("frequency", vibrato.getFrequency());
+            obj.put("depth", vibrato.getDepth());
+            json.put("vibrato", obj);
+        }
+
+        Rotation rotation = filters.getRotation();
+        if (rotation != null) {
+            JSONObject obj = new JSONObject();
+            obj.put("rotationHz", rotation.getFrequency());
+            json.put("rotation", obj);
+        }
+
+        Distortion distortion = filters.getDistortion();
+        if (distortion != null) {
+            JSONObject obj = new JSONObject();
+            obj.put("sinOffset", distortion.getSinOffset());
+            obj.put("sinScale", distortion.getSinScale());
+            obj.put("cosOffset", distortion.getCosOffset());
+            obj.put("cosScale", distortion.getCosScale());
+            obj.put("tanOffset", distortion.getTanOffset());
+            obj.put("tanScale", distortion.getTanScale());
+            obj.put("offset", distortion.getOffset());
+            obj.put("scale", distortion.getScale());
+            json.put("distortion", obj);
+        }
+
+        ChannelMix channelMix = filters.getChannelMix();
+        if (channelMix != null) {
+            JSONObject obj = new JSONObject();
+            obj.put("leftToLeft", channelMix.getLeftToLeft());
+            obj.put("leftToRight", channelMix.getLeftToRight());
+            obj.put("rightToLeft", channelMix.getRightToLeft());
+            obj.put("rightToRight", channelMix.getRightToRight());
+            json.put("channelMix", obj);
+        }
+
+        LowPass lowPass = filters.getLowPass();
+        if (lowPass != null) {
+            JSONObject obj = new JSONObject();
+            obj.put("smoothing", lowPass.getSmoothing());
+            json.put("lowPass", obj);
+        }
+
+        node.send(json.toString());
+    }
+
+    /**
+     * @return Whether or not the Lavalink player is connected to the gateway
+     */
+    public boolean isConnected() {
+        return connected;
+    }
 }

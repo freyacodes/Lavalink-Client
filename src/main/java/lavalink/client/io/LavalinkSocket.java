@@ -50,20 +50,30 @@ public class LavalinkSocket extends ReusableWebSocket {
     @NonNull
     private final String name;
     @NonNull
-    private final Lavalink lavalink;
+    private final String password;
+    @NonNull
+    private final Lavalink<?> lavalink;
     @Nullable
     private RemoteStats stats;
     long lastReconnectAttempt = 0;
     private int reconnectsAttempted = 0;
     @NonNull
     private final URI remoteUri;
+    private final LavalinkRestClient restClient;
     private boolean available = false;
 
-    LavalinkSocket(@NonNull String name, @NonNull Lavalink lavalink, @NonNull URI serverUri, Draft protocolDraft, Map<String, String> headers) {
+    LavalinkSocket(@NonNull String name, @NonNull Lavalink<?> lavalink, @NonNull URI serverUri, Draft protocolDraft, Map<String, String> headers) {
         super(serverUri, protocolDraft, headers, TIMEOUT_MS);
         this.name = name;
+        this.password = headers.get("Authorization");
         this.lavalink = lavalink;
         this.remoteUri = serverUri;
+        this.restClient = new LavalinkRestClient(this);
+    }
+
+    @NonNull
+    public LavalinkRestClient getRestClient() {
+        return restClient;
     }
 
     @Override
@@ -179,7 +189,6 @@ public class LavalinkSocket extends ReusableWebSocket {
         } else {
             log.warn("Connection to " + getRemoteUri() + " closed unexpectedly with reason " + code + ": " + reason + " :: Remote=" + remote);
         }
-
         lavalink.loadBalancer.onNodeDisconnect(this);
     }
 
@@ -231,6 +240,11 @@ public class LavalinkSocket extends ReusableWebSocket {
     @NonNull
     public String getName() {
         return name;
+    }
+
+    @NonNull
+    public String getPassword() {
+        return password;
     }
 
     @Override

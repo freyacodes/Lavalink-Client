@@ -20,9 +20,9 @@ import java.util.List;
 @SuppressWarnings("unused")
 public class LavalinkCollector extends Collector {
 
-    private final Lavalink lavalink;
+    private final Lavalink<?> lavalink;
 
-    public LavalinkCollector(@NonNull Lavalink lavalinkInstance) {
+    public LavalinkCollector(@NonNull Lavalink<?> lavalinkInstance) {
         this.lavalink = lavalinkInstance;
     }
 
@@ -79,7 +79,6 @@ public class LavalinkCollector extends Collector {
         mfs.add(averageFramesDeficitPerMinute);
 
 
-        //noinspection unchecked
         List<LavalinkSocket> nodes = lavalink.getNodes();
         for (LavalinkSocket node : nodes) {
             List<String> labels = Collections.singletonList(node.getName());
@@ -90,7 +89,7 @@ public class LavalinkCollector extends Collector {
 
             players.addMetric(labels, stats.getPlayers());
             playingPlayers.addMetric(labels, stats.getPlayingPlayers());
-            uptimeSeconds.addMetric(labels, stats.getUptime() / 1000);
+            uptimeSeconds.addMetric(labels, (double) stats.getUptime() / 1000);
 
             memFree.addMetric(labels, stats.getMemFree());
             memUsed.addMetric(labels, stats.getMemUsed());

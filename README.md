@@ -30,7 +30,17 @@ Or Gradle:
     }
 
     dependencies {
-        compile group: 'com.github.freyacodes', name: 'Lavalink-Client', version: 'x.y.z'
+        implementation "com.github.freyacodes:Lavalink-Client:x.y.z"
+    }
+```
+
+Or Gradle DSL:
+```kotlin
+    repositories {
+        maven(url = "https://jitpack.io")
+    }
+    dependencies {
+        implementation("com.github.freyacodes:Lavalink-Client:x.y.z")
     }
 ```
 

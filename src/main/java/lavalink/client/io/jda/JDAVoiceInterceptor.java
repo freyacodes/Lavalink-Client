@@ -1,8 +1,8 @@
 package lavalink.client.io.jda;
 
 import lavalink.client.io.Link;
+import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import org.json.JSONObject;
 
@@ -32,7 +32,7 @@ public class JDAVoiceInterceptor implements VoiceDispatchInterceptor {
     @Override
     public boolean onVoiceStateUpdate(@Nonnull VoiceStateUpdate update) {
 
-        VoiceChannel channel = update.getChannel();
+        AudioChannel channel = update.getChannel();
         JdaLink link = lavalink.getLink(update.getGuildId());
 
         if (channel == null) {

@@ -134,8 +134,11 @@ public class LavalinkPlayer implements IPlayer {
         paused = pause;
 
         if (pause) {
+            long timeDiff = System.currentTimeMillis() - updateTime;
+            position += timeDiff;
             emitEvent(new PlayerPauseEvent(this));
         } else {
+            updateTime = System.currentTimeMillis();
             emitEvent(new PlayerResumeEvent(this));
         }
     }

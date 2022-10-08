@@ -8,9 +8,9 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.events.GenericEvent;
-import net.dv8tion.jda.api.events.ReconnectedEvent;
 import net.dv8tion.jda.api.events.channel.ChannelDeleteEvent;
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
+import net.dv8tion.jda.api.events.session.SessionRecreateEvent;
 import net.dv8tion.jda.api.hooks.EventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,7 +114,7 @@ public class JdaLavalink extends Lavalink<JdaLink> implements EventListener {
 
     @Override
     public void onEvent(@NonNull GenericEvent event) {
-        if (event instanceof ReconnectedEvent) {
+        if (event instanceof SessionRecreateEvent) {
             if (autoReconnect) {
                 getLinksMap().forEach((guildId, link) -> {
                     try {

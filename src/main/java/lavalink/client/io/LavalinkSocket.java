@@ -114,7 +114,7 @@ public class LavalinkSocket extends ReusableWebSocket {
                 break;
             case "TrackEndEvent":
                 event = new TrackEndEvent(player,
-                        LavalinkUtil.toAudioTrackWithData(lavalink.getAudioPlayerManager(), player, json.getString("track")),
+                        LavalinkUtil.toAudioTrackWithData(player, json.getString("track")),
                         AudioTrackEndReason.valueOf(json.getString("reason"))
                 );
                 break;
@@ -132,12 +132,12 @@ public class LavalinkSocket extends ReusableWebSocket {
                 }
 
                 event = new TrackExceptionEvent(player,
-                        LavalinkUtil.toAudioTrackWithData(lavalink.getAudioPlayerManager(), player, json.getString("track")), ex
+                        LavalinkUtil.toAudioTrackWithData(player, json.getString("track")), ex
                 );
                 break;
             case "TrackStuckEvent":
                 event = new TrackStuckEvent(player,
-                        LavalinkUtil.toAudioTrackWithData(lavalink.getAudioPlayerManager(), player, json.getString("track")),
+                        LavalinkUtil.toAudioTrackWithData(player, json.getString("track")),
                         json.getLong("thresholdMs")
                 );
                 break;

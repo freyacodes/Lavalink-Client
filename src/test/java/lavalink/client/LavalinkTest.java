@@ -8,8 +8,6 @@ import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
-import lavalink.client.io.Lavalink;
-import lavalink.client.io.LavalinkSocket;
 import lavalink.client.io.Link;
 import lavalink.client.io.jda.JdaLavalink;
 import lavalink.client.io.jda.JdaLink;
@@ -35,10 +33,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @RequireSystemProperty({
         LavalinkTest.PROPERTY_TOKEN,
@@ -112,7 +107,7 @@ class LavalinkTest {
             ArrayList<AudioTrack> list = new ArrayList<>();
             trackData.forEach(o -> {
                 try {
-                    list.add(LavalinkUtil.toAudioTrack(((JSONObject) o).getString("track")));
+                    list.add(LavalinkUtil.toAudioTrack(lavalink.getAudioPlayerManager(), ((JSONObject) o).getString("track")));
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }

@@ -4,6 +4,9 @@
 
 package lavalink.client.io;
 
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
+import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
+import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
 import org.java_websocket.drafts.Draft_6455;
@@ -15,11 +18,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class Lavalink<T extends Link> {
@@ -34,12 +33,19 @@ public abstract class Lavalink<T extends Link> {
     private final ConcurrentHashMap<String, T> links = new ConcurrentHashMap<>();
     final List<LavalinkSocket> nodes = new CopyOnWriteArrayList<>();
     final LavalinkLoadBalancer loadBalancer = new LavalinkLoadBalancer(this);
+    private final AudioPlayerManager audioPlayerManager;
 
     private final ScheduledExecutorService reconnectService;
 
-    public Lavalink(@Nullable String userId, int numShards) {
+    /**
+     * @param userId the user ID of the bot account
+     * @param numShards number of shards that the bot is running
+     * @param audioPlayerManager used for serializing/deserializing tracks
+     */
+    public Lavalink(@Nullable String userId, int numShards, @Nullable AudioPlayerManager audioPlayerManager) {
         this.userId = userId;
         this.numShards = numShards;
+        this.audioPlayerManager = audioPlayerManager != null ? audioPlayerManager : createDefaultAudioPlayerManager();
 
         reconnectService = Executors.newSingleThreadScheduledExecutor(r -> {
             Thread thread = new Thread(r, "lavalink-reconnect-thread");
@@ -49,13 +55,24 @@ public abstract class Lavalink<T extends Link> {
         reconnectService.scheduleWithFixedDelay(new ReconnectTask(this), 0, 500, TimeUnit.MILLISECONDS);
     }
 
+    public Lavalink(@Nullable String userId, int numShards) {
+        this(userId, numShards, null);
+    }
+
     /**
      * Creates a Lavalink instance.
      * N.B: You must set the user ID before adding a node
      */
     @SuppressWarnings("unused")
     public Lavalink(int numShards) {
-        this(null, numShards);
+        this(null, numShards, null);
+    }
+
+    private AudioPlayerManager createDefaultAudioPlayerManager() {
+        AudioPlayerManager manager = new DefaultAudioPlayerManager();
+        AudioSourceManagers.registerLocalSource(manager);
+        AudioSourceManagers.registerRemoteSources(manager);
+        return manager;
     }
 
     private static final AtomicInteger nodeCounter = new AtomicInteger(0);
@@ -174,4 +191,7 @@ public abstract class Lavalink<T extends Link> {
         return links;
     }
 
+    public AudioPlayerManager getAudioPlayerManager() {
+        return audioPlayerManager;
+    }
 }

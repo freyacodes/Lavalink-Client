@@ -39,16 +39,14 @@ public class LavalinkUtil {
     }
 
     /**
-     *
      * @param player the lavalink player that holds the track with data
      * @param message the Base64 audio track
      * @return the AudioTrack with the user data stored in the player
      * @throws IOException if there is an IO problem
      */
-    @Deprecated
     public static AudioTrack toAudioTrackWithData(LavalinkPlayer player, String message) throws IOException{
         AudioTrack storedTrack = player.getPlayingTrack();
-        AudioTrack messageTrack = toAudioTrack(message);
+        AudioTrack messageTrack = toAudioTrack(player.getLink().getLavalink().getAudioPlayerManager(), message);
 
         if (storedTrack != null && storedTrack.getUserData() != null) {
             messageTrack.setUserData(storedTrack.getUserData());
@@ -105,24 +103,6 @@ public class LavalinkUtil {
 
     /**
      * @param playerManager AudioPlayerManager to decode the track
-     * @param player the lavalink player that holds the track with data
-     * @param message the Base64 audio track
-     * @return the AudioTrack with the user data stored in the player
-     * @throws IOException if there is an IO problem
-     */
-    public static AudioTrack toAudioTrackWithData(AudioPlayerManager playerManager, LavalinkPlayer player, String message) throws IOException{
-        AudioTrack storedTrack = player.getPlayingTrack();
-        AudioTrack messageTrack = toAudioTrack(playerManager, message);
-
-        if (storedTrack != null && storedTrack.getUserData() != null) {
-            messageTrack.setUserData(storedTrack.getUserData());
-        }
-
-        return messageTrack;
-    }
-
-    /**
-     * @param playerManager AudioPlayerManager to decode the track
      * @param message the Base64 audio track
      * @return the AudioTrack
      * @throws IOException if there is an IO problem
@@ -150,7 +130,7 @@ public class LavalinkUtil {
      * @throws IOException if there is an IO problem
      */
     public static String toMessage(AudioPlayerManager playerManager, AudioTrack track) throws IOException {
-        return Base64.getEncoder().encodeToString(toBinary(track));
+        return Base64.getEncoder().encodeToString(toBinary(playerManager, track));
     }
 
     /**

@@ -6,7 +6,6 @@ package lavalink.client.io;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
-import com.sedmelluq.discord.lavaplayer.player.FunctionalResultHandler;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
@@ -66,7 +65,7 @@ public final class LavalinkRestClient {
     @NonNull
     public CompletableFuture<List<AudioTrack>> getYoutubeSearchResult(final String query) {
         return load(YOUTUBE_SEARCH_PREFIX + query)
-                .thenApplyAsync(LavalinkRestClient::transformSearchResult);
+                .thenApplyAsync(this::transformSearchResult);
     }
 
     /**
@@ -80,7 +79,7 @@ public final class LavalinkRestClient {
     @NonNull
     public CompletableFuture<List<AudioTrack>> getSoundcloudSearchResult(final String query) {
         return load(SOUNDCLOUD_SEARCH_PREFIX + query)
-                .thenApplyAsync(LavalinkRestClient::transformSearchResult);
+                .thenApplyAsync(this::transformSearchResult);
     }
 
     /**
@@ -105,7 +104,7 @@ public final class LavalinkRestClient {
 
         try {
             final String loadType = loadResult.getString("loadType");
-            final TrackLoadResultHandler trackLoadResultHandler = new TrackLoadResultHandler(loadResult);
+            final TrackLoadResultHandler trackLoadResultHandler = new TrackLoadResultHandler(socket, loadResult);
 
             switch (loadType) {
                 case "TRACK_LOADED":
@@ -144,10 +143,10 @@ public final class LavalinkRestClient {
         });
     }
 
-    private static List<AudioTrack> transformSearchResult(JSONObject loadResult) {
+    private List<AudioTrack> transformSearchResult(JSONObject loadResult) {
         return loadResult.getJSONArray("tracks").toList().stream().map(track -> {
             try {
-                return LavalinkUtil.toAudioTrack(new JSONObject((Map<?, ?>) track).getString("track"));
+                return LavalinkUtil.toAudioTrack(socket.lavalink.getAudioPlayerManager(), new JSONObject((Map<?, ?>) track).getString("track"));
             } catch (final IOException exception) {
                 log.error("Failed to convert search result $track to load result", exception);
             }
@@ -188,9 +187,11 @@ public final class LavalinkRestClient {
 
     private static final class TrackLoadResultHandler {
 
+        private final LavalinkSocket socket;
         private final JSONObject loadResult;
 
-        private TrackLoadResultHandler(JSONObject loadResult) {
+        private TrackLoadResultHandler(LavalinkSocket socket, JSONObject loadResult) {
+            this.socket = socket;
             this.loadResult = loadResult;
         }
 
@@ -199,7 +200,7 @@ public final class LavalinkRestClient {
             final JSONObject trackObject = trackDataSingle.getJSONObject(0);
             final String singleTrackBase64 = trackObject.getString("track");
 
-            return LavalinkUtil.toAudioTrack(singleTrackBase64);
+            return LavalinkUtil.toAudioTrack(socket.lavalink.getAudioPlayerManager(), singleTrackBase64);
         }
 
         private AudioPlaylist handlePlaylistLoaded(boolean isSearchResult) throws Exception {
@@ -208,7 +209,7 @@ public final class LavalinkRestClient {
 
             for (final Object track : trackData) {
                 final String trackBase64 = ((JSONObject) track).getString("track");
-                final AudioTrack audioTrack = LavalinkUtil.toAudioTrack(trackBase64);
+                final AudioTrack audioTrack = LavalinkUtil.toAudioTrack(socket.lavalink.getAudioPlayerManager(), trackBase64);
 
                 tracks.add(audioTrack);
             }

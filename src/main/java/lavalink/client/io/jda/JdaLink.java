@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) Freya Arbjerg. Licensed under the MIT license
+ */
+
 package lavalink.client.io.jda;
 
 import edu.umd.cs.findbugs.annotations.NonNull;

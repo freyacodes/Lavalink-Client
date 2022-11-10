@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) Freya Arbjerg. Licensed under the MIT license
+ */
+
 package lavalink.client.io.metrics;
 
 import edu.umd.cs.findbugs.annotations.NonNull;

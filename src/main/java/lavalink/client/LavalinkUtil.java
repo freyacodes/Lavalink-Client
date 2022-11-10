@@ -1,23 +1,5 @@
 /*
- * Copyright (c) 2017 Frederik Ar. Mikkelsen & NoobLance
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
+ * Copyright (c) Freya Arbjerg. Licensed under the MIT license
  */
 
 package lavalink.client;
@@ -63,6 +45,7 @@ public class LavalinkUtil {
      * @return the AudioTrack with the user data stored in the player
      * @throws IOException if there is an IO problem
      */
+    @Deprecated
     public static AudioTrack toAudioTrackWithData(LavalinkPlayer player, String message) throws IOException{
         AudioTrack storedTrack = player.getPlayingTrack();
         AudioTrack messageTrack = toAudioTrack(message);
@@ -80,6 +63,7 @@ public class LavalinkUtil {
      * @return the AudioTrack
      * @throws IOException if there is an IO problem
      */
+    @Deprecated
     public static AudioTrack toAudioTrack(String message) throws IOException {
         return toAudioTrack(Base64.getDecoder().decode(message));
     }
@@ -89,6 +73,7 @@ public class LavalinkUtil {
      * @return the AudioTrack
      * @throws IOException if there is an IO problem
      */
+    @Deprecated
     @SuppressWarnings("WeakerAccess")
     public static AudioTrack toAudioTrack(byte[] message) throws IOException {
         ByteArrayInputStream bais = new ByteArrayInputStream(message);
@@ -100,6 +85,7 @@ public class LavalinkUtil {
      * @return the serialized track a Base64 string
      * @throws IOException if there is an IO problem
      */
+    @Deprecated
     public static String toMessage(AudioTrack track) throws IOException {
         return Base64.getEncoder().encodeToString(toBinary(track));
     }
@@ -110,9 +96,73 @@ public class LavalinkUtil {
      * @throws IOException if there is an IO problem
      */
     @SuppressWarnings("WeakerAccess")
+    @Deprecated
     public static byte[] toBinary(AudioTrack track) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PLAYER_MANAGER.encodeTrack(new MessageOutput(baos), track);
+        return baos.toByteArray();
+    }
+
+    /**
+     * @param playerManager AudioPlayerManager to decode the track
+     * @param player the lavalink player that holds the track with data
+     * @param message the Base64 audio track
+     * @return the AudioTrack with the user data stored in the player
+     * @throws IOException if there is an IO problem
+     */
+    public static AudioTrack toAudioTrackWithData(AudioPlayerManager playerManager, LavalinkPlayer player, String message) throws IOException{
+        AudioTrack storedTrack = player.getPlayingTrack();
+        AudioTrack messageTrack = toAudioTrack(playerManager, message);
+
+        if (storedTrack != null && storedTrack.getUserData() != null) {
+            messageTrack.setUserData(storedTrack.getUserData());
+        }
+
+        return messageTrack;
+    }
+
+    /**
+     * @param playerManager AudioPlayerManager to decode the track
+     * @param message the Base64 audio track
+     * @return the AudioTrack
+     * @throws IOException if there is an IO problem
+     */
+    public static AudioTrack toAudioTrack(AudioPlayerManager playerManager, String message) throws IOException {
+        return toAudioTrack(playerManager, Base64.getDecoder().decode(message));
+    }
+
+    /**
+     * @param playerManager AudioPlayerManager to decode the track
+     * @param message the unencoded audio track
+     * @return the AudioTrack
+     * @throws IOException if there is an IO problem
+     */
+    @SuppressWarnings("WeakerAccess")
+    public static AudioTrack toAudioTrack(AudioPlayerManager playerManager, byte[] message) throws IOException {
+        ByteArrayInputStream bais = new ByteArrayInputStream(message);
+        return playerManager.decodeTrack(new MessageInput(bais)).decodedTrack;
+    }
+
+    /**
+     * @param playerManager AudioPlayerManager to encode the track
+     * @param track the track to serialize
+     * @return the serialized track a Base64 string
+     * @throws IOException if there is an IO problem
+     */
+    public static String toMessage(AudioPlayerManager playerManager, AudioTrack track) throws IOException {
+        return Base64.getEncoder().encodeToString(toBinary(track));
+    }
+
+    /**
+     * @param playerManager AudioPlayerManager to encode the track
+     * @param track the track to serialize
+     * @return the serialized track as binary
+     * @throws IOException if there is an IO problem
+     */
+    @SuppressWarnings("WeakerAccess")
+    public static byte[] toBinary(AudioPlayerManager playerManager, AudioTrack track) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        playerManager.encodeTrack(new MessageOutput(baos), track);
         return baos.toByteArray();
     }
 
@@ -120,6 +170,7 @@ public class LavalinkUtil {
         return (int) ((Long.parseLong(snowflake) >> 22) % numShards);
     }
 
+    @Deprecated
     public static AudioPlayerManager getPlayerManager() {
         return PLAYER_MANAGER;
     }

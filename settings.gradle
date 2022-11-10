@@ -1,2 +1,2 @@
 rootProject.name = 'Lavalink-Client'
-enableFeaturePreview('STABLE_PUBLISHING') //remove after Gradle 5.0
+//enableFeaturePreview('STABLE_PUBLISHING') //remove after Gradle 5.0

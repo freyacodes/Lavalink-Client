@@ -84,7 +84,6 @@ public class LavalinkPlayer implements IPlayer {
 
             updateTime = System.currentTimeMillis();
             this.track = track;
-            emitEvent(new TrackStartEvent(this, track));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

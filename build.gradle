@@ -45,7 +45,7 @@ ext {
     //@formatter:off
     gradleVersion               = '7.4.2'
 
-    lavaplayerVersion           = '1.3.98.4'
+    lavaplayerVersion           = '1.4.2'
     javaWebSocketVersion        = '1.5.2'
     slf4jVersion                = '2.0.3'
     jsonOrgVersion              = '20220924'
@@ -62,7 +62,7 @@ ext {
 }
 
 dependencies {
-    api group: 'com.sedmelluq', name: 'lavaplayer', version: lavaplayerVersion
+    api group: 'com.github.walkyst', name: 'lavaplayer-fork', version: lavaplayerVersion
     api group: 'org.java-websocket', name: 'Java-WebSocket', version: javaWebSocketVersion
     api group: 'org.slf4j', name: 'slf4j-api', version: slf4jVersion
     api group: 'org.json', name: 'json', version: jsonOrgVersion

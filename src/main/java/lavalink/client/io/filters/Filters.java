@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) Freya Arbjerg. Licensed under the MIT license
+ */
+
 package lavalink.client.io.filters;
 
 import lavalink.client.player.LavalinkPlayer;

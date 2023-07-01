@@ -10,10 +10,11 @@ import lavalink.client.LavalinkUtil;
 import lavalink.client.io.Lavalink;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.events.GenericEvent;
-import net.dv8tion.jda.api.events.ReconnectedEvent;
-import net.dv8tion.jda.api.events.channel.voice.VoiceChannelDeleteEvent;
+import net.dv8tion.jda.api.events.channel.ChannelDeleteEvent;
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
+import net.dv8tion.jda.api.events.session.SessionRecreateEvent;
 import net.dv8tion.jda.api.hooks.EventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -117,14 +118,14 @@ public class JdaLavalink extends Lavalink<JdaLink> implements EventListener {
 
     @Override
     public void onEvent(@NonNull GenericEvent event) {
-        if (event instanceof ReconnectedEvent) {
+        if (event instanceof SessionRecreateEvent) {
             if (autoReconnect) {
                 getLinksMap().forEach((guildId, link) -> {
                     try {
                         //Note: We also ensure that the link belongs to the JDA object
                         if (link.getLastChannel() != null
                                 && event.getJDA().getGuildById(guildId) != null) {
-                            link.connect(event.getJDA().getVoiceChannelById(link.getLastChannel()), false);
+                            link.connect(event.getJDA().getChannelById(AudioChannel.class, link.getLastChannel()), false);
                         }
                     } catch (Exception e) {
                         log.error("Caught exception while trying to reconnect link " + link, e);
@@ -136,8 +137,8 @@ public class JdaLavalink extends Lavalink<JdaLink> implements EventListener {
             if (link == null) return;
 
             link.removeConnection();
-        } else if (event instanceof VoiceChannelDeleteEvent) {
-            VoiceChannelDeleteEvent e = (VoiceChannelDeleteEvent) event;
+        } else if (event instanceof ChannelDeleteEvent) {
+            ChannelDeleteEvent e = (ChannelDeleteEvent) event;
             JdaLink link = getLinksMap().get(e.getGuild().getId());
             if (link == null || !e.getChannel().getId().equals(link.getLastChannel())) return;
 

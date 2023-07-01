@@ -16,7 +16,7 @@ import lavalink.client.player.event.PlayerEventListenerAdapter;
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.AfterAll;
@@ -60,8 +60,7 @@ class LavalinkTest {
 
     @BeforeAll
     static void setUp() throws Exception {
-        JDABuilder jdaBuilder = new JDABuilder(AccountType.BOT)
-                .setToken(getSystemProperty(PROPERTY_TOKEN));
+        JDABuilder jdaBuilder = JDABuilder.createDefault(getSystemProperty(PROPERTY_TOKEN));
 
         JDA selfId = jdaBuilder.build();
         lavalink = new JdaLavalink(selfId.retrieveApplicationInfo().submit().get(30, TimeUnit.SECONDS).getId(), 1, integer -> jda);

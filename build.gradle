@@ -49,7 +49,7 @@ ext {
     javaWebSocketVersion        = '1.5.2'
     slf4jVersion                = '2.0.3'
     jsonOrgVersion              = '20220924'
-    jdaVersion                  = '5.0.0-beta.11'
+    jdaVersion                  = '5.0.0-beta.12'
     spotbugsAnnotationsVersion  = '4.7.2'
     prometheusVersion           = '0.9.0'
 

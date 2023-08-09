@@ -13,7 +13,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +56,7 @@ public class JdaLink extends Link {
         if (checkChannel && channel.equals(voiceState.getChannel()))
             return;
 
-        if (voiceState.inVoiceChannel()) {
+        if (voiceState.inAudioChannel()) {
             final int userLimit = channel.getUserLimit(); // userLimit is 0 if no limit is set!
             if (!self.isOwner() && !self.hasPermission(Permission.ADMINISTRATOR)) {
                 if (userLimit > 0                                                      // If there is a userlimit
